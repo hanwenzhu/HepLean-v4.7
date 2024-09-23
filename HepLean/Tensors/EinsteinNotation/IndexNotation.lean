@@ -32,8 +32,8 @@ open TensorStructure TensorIndex
 
 variable {R : Type} [CommSemiring R] {n m : ℕ}
 
-instance : IndexNotation (einsteinTensor R n).Color := instIndexNotationColorEinsteinTensorColor
-instance : DecidableEq (einsteinTensor R n).Color := instDecidableEqColorEinsteinTensorColor
+instance instIndexNotationColor : IndexNotation (einsteinTensor R n).Color := instIndexNotationColorEinsteinTensorColor
+instance instDecidableEqColor : DecidableEq (einsteinTensor R n).Color := instDecidableEqColorEinsteinTensorColor
 
 @[simp]
 lemma indexNotation_eq_color : @einsteinTensor.instIndexNotationColor R _ n =
@@ -108,7 +108,7 @@ macro "prodTactic" : tactic =>
     decide})
 
 lemma mem_fin_list (n : ℕ) (i : Fin n) : i ∈ Fin.list n := by
-  have h1' : (Fin.list n)[i] = i := Fin.getElem_list _ _
+  have h1' : (Fin.list n)[i] = i := Fin.get_list _
   exact h1' ▸ List.getElem_mem _ _ _
 
 instance (n : ℕ) (i : Fin n) : Decidable (i ∈ Fin.list n) :=

@@ -16,7 +16,7 @@ of Lorentz vectors in d dimensions.
 
 -/
 
-open Matrix
+open Matrix BigOperators
 
 /-!
 

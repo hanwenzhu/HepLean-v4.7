@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 import HepLean.Tensors.IndexNotation.IndexList.CountId
 import HepLean.Tensors.IndexNotation.IndexList.Contraction
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Finset.Sort
 import Mathlib.Tactic.FinCases
 /-!

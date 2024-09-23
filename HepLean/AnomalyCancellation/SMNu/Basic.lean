@@ -102,7 +102,7 @@ def accGrav : (SMνCharges n).Charges →ₗ[ℚ] ℚ where
     simp [HSMul.hSMul, SMul.smul]
     repeat erw [Finset.sum_add_distrib]
     repeat erw [← Finset.mul_sum]
-    -- rw [show Rat.cast a = a from rfl]
+    rw [show Rat.cast a = a from rfl]
     ring
 
 lemma accGrav_decomp (S : (SMνCharges n).Charges) :
@@ -136,7 +136,7 @@ def accSU2 : (SMνCharges n).Charges →ₗ[ℚ] ℚ where
     simp [HSMul.hSMul, SMul.smul]
     repeat erw [Finset.sum_add_distrib]
     repeat erw [← Finset.mul_sum]
-    -- rw [show Rat.cast a = a from rfl]
+    rw [show Rat.cast a = a from rfl]
     ring
 
 lemma accSU2_decomp (S : (SMνCharges n).Charges) :
@@ -169,7 +169,7 @@ def accSU3 : (SMνCharges n).Charges →ₗ[ℚ] ℚ where
     simp [HSMul.hSMul, SMul.smul]
     repeat erw [Finset.sum_add_distrib]
     repeat erw [← Finset.mul_sum]
-    -- rw [show Rat.cast a = a from rfl]
+    rw [show Rat.cast a = a from rfl]
     ring
 
 lemma accSU3_decomp (S : (SMνCharges n).Charges) :
@@ -204,7 +204,7 @@ def accYY : (SMνCharges n).Charges →ₗ[ℚ] ℚ where
     simp [HSMul.hSMul, SMul.smul]
     repeat erw [Finset.sum_add_distrib]
     repeat erw [← Finset.mul_sum]
-    -- rw [show Rat.cast a = a from rfl]
+    rw [show Rat.cast a = a from rfl]
     ring
 
 lemma accYY_decomp (S : (SMνCharges n).Charges) :

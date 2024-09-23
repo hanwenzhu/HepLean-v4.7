@@ -4,6 +4,7 @@ Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
 import Lean
+import Std.Lean.Util.Path
 /-!
 
 This file enables us to transverse tactics and test for conditions.

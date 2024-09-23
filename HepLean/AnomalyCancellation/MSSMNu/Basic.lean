@@ -152,7 +152,7 @@ def accGrav : MSSMCharges.Charges →ₗ[ℚ] ℚ where
     simp [HSMul.hSMul, SMul.smul]
     repeat erw [Finset.sum_add_distrib]
     repeat erw [← Finset.mul_sum]
-    --rw [show Rat.cast a = a from rfl]
+    rw [show Rat.cast a = a from rfl]
     ring
 
 /-- Extensionality lemma for `accGrav`. -/
@@ -185,7 +185,7 @@ def accSU2 : MSSMCharges.Charges →ₗ[ℚ] ℚ where
     simp [HSMul.hSMul, SMul.smul]
     repeat erw [Finset.sum_add_distrib]
     repeat erw [← Finset.mul_sum]
-    --rw [show Rat.cast a = a from rfl]
+    rw [show Rat.cast a = a from rfl]
     ring
 
 /-- Extensionality lemma for `accSU2`. -/
@@ -217,7 +217,7 @@ def accSU3 : MSSMCharges.Charges →ₗ[ℚ] ℚ where
     simp [HSMul.hSMul, SMul.smul]
     repeat erw [Finset.sum_add_distrib]
     repeat erw [← Finset.mul_sum]
-    --rw [show Rat.cast a = a from rfl]
+    rw [show Rat.cast a = a from rfl]
     ring
 
 /-- Extensionality lemma for `accSU3`. -/
@@ -249,7 +249,7 @@ def accYY : MSSMCharges.Charges →ₗ[ℚ] ℚ where
     simp [HSMul.hSMul, SMul.smul]
     repeat erw [Finset.sum_add_distrib]
     repeat erw [← Finset.mul_sum]
-    -- rw [show Rat.cast a = a from rfl]
+    rw [show Rat.cast a = a from rfl]
     ring
 
 /-- Extensionality lemma for `accGrav`. -/
@@ -321,7 +321,8 @@ lemma accQuad_ext {S T : (MSSMCharges).Charges}
     ∑ i, ((fun a => a^2) ∘ toSMSpecies j T) i)
     (hd : Hd S = Hd T) (hu : Hu S = Hu T) :
     accQuad S = accQuad T := by
-  simp only [HomogeneousQuadratic, accQuad, BiLinearSymm.toHomogeneousQuad_apply]
+  simp only [HomogeneousQuadratic, accQuad]
+  rw [BiLinearSymm.toHomogeneousQuad_apply, BiLinearSymm.toHomogeneousQuad_apply]
   erw [← quadBiLin.toFun_eq_coe]
   simp only [quadBiLin, BiLinearSymm.mk₂, AddHom.toFun_eq_coe, AddHom.coe_mk, LinearMap.coe_mk]
   repeat erw [Finset.sum_add_distrib]
@@ -415,8 +416,8 @@ lemma accCube_ext {S T : MSSMCharges.Charges}
     ∑ i, ((fun a => a^3) ∘ toSMSpecies j T) i)
     (hd : Hd S = Hd T) (hu : Hu S = Hu T) :
     accCube S = accCube T := by
-  simp only [HomogeneousCubic, accCube, cubeTriLin, TriLinearSymm.toCubic_apply,
-    TriLinearSymm.mk₃_toFun_apply_apply, cubeTriLinToFun]
+  simp only [HomogeneousCubic, accCube, cubeTriLin]
+  repeat rw [TriLinearSymm.toCubic_apply, TriLinearSymm.mk₃_toFun_apply_apply, cubeTriLinToFun]
   repeat erw [Finset.sum_add_distrib]
   repeat erw [← Finset.mul_sum]
   ring_nf

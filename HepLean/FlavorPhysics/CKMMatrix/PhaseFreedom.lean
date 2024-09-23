@@ -38,7 +38,7 @@ lemma shift_ud_phase_zero (V : CKMMatrix) (h1 : u + d = - arg [V]ud) :
     simp only [Fin.isValue, ofReal_add]
     ring
   rw [h2, h1]
-  simp only [Fin.isValue, add_neg_cancel, ofReal_zero, zero_mul, exp_zero, mul_one, VudAbs,
+  simp only [Fin.isValue, add_neg_self, ofReal_zero, zero_mul, exp_zero, mul_one, VudAbs,
     ofReal_inj]
   rfl
 
@@ -49,7 +49,7 @@ lemma shift_us_phase_zero {V : CKMMatrix} (h1 : u + s = - arg [V]us) :
     simp only [Fin.isValue, ofReal_add]
     ring
   rw [h2, h1]
-  simp only [Fin.isValue, add_neg_cancel, ofReal_zero, zero_mul, exp_zero, mul_one, VusAbs,
+  simp only [Fin.isValue, add_neg_self, ofReal_zero, zero_mul, exp_zero, mul_one, VusAbs,
     ofReal_inj]
   rfl
 
@@ -168,7 +168,7 @@ elements are real and related in a set way.
 -/
 def ubOnePhaseCond (U : CKMMatrix) : Prop :=
     [U]ud = 0 ∧ [U]us = 0 ∧ [U]cb = 0 ∧ [U]ub = 1 ∧ [U]t = conj [U]u ×₃ conj [U]c
-    ∧ [U]cd = - VcdAbs ⟦U⟧ ∧ [U]cs = √(1 - VcdAbs ⟦U⟧ ^ 2)
+    ∧ [U]cd = - VcdAbs ⟦U⟧ ∧ [U]cs = (1 - VcdAbs ⟦U⟧ ^ 2).sqrt
 
 lemma fstRowThdColRealCond_shift_solution {V : CKMMatrix} (h1 : a + d = - arg [V]ud)
     (h2 : a + e = - arg [V]us) (h3 : b + f = - arg [V]cb)

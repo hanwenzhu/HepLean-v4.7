@@ -74,9 +74,8 @@ lemma doublePoint_Y₃_Y₃ (R : MSSMACC.LinSols) :
   simp only [MSSMACC_numberLinear, MSSMACC_linearACCs, Nat.reduceMul, Fin.isValue,
     Fin.reduceFinMk] at hLin
   have h3 := hLin 3
-  simp only [Fin.isValue, Fin.sum_univ_three, Prod.mk_zero_zero, Prod.mk_one_one, LinearMap.coe_mk,
+  simp only [Fin.isValue, Fin.sum_univ_three, LinearMap.coe_mk,
     AddHom.coe_mk] at h3
   linear_combination (norm := ring_nf) 6 * h3
-  simp only [Fin.isValue, Prod.mk_zero_zero, Prod.mk_one_one, add_add_sub_cancel, add_neg_cancel]
 
 end MSSMACC

@@ -114,9 +114,9 @@ lemma δ₂_δ!₂ (j : Fin n) : δ₂ j = δ!₂ j := by
 lemma sum_δ (S : Fin (2 * n + 1) → ℚ) :
     ∑ i, S i = S δ₃ + ∑ i : Fin n, ((S ∘ δ₁) i + (S ∘ δ₂) i) := by
   have h1 : ∑ i, S i = ∑ i : Fin (n + 1 + n), S (Fin.cast (split_odd n) i) := by
-    rw [Finset.sum_equiv (Fin.castOrderIso (split_odd n)).symm.toEquiv]
+    rw [Finset.sum_equiv (Fin.castIso (split_odd n)).symm.toEquiv]
     · intro i
-      simp only [mem_univ, Fin.symm_castOrderIso, RelIso.coe_fn_toEquiv]
+      simp only [mem_univ, Fin.symm_castIso, RelIso.coe_fn_toEquiv]
     · exact fun _ _ => rfl
   rw [h1]
   rw [Fin.sum_univ_add, Fin.sum_univ_add]
@@ -129,9 +129,9 @@ lemma sum_δ (S : Fin (2 * n + 1) → ℚ) :
 lemma sum_δ! (S : Fin (2 * n + 1) → ℚ) :
     ∑ i, S i = S δ!₃ + ∑ i : Fin n, ((S ∘ δ!₁) i + (S ∘ δ!₂) i) := by
   have h1 : ∑ i, S i = ∑ i : Fin ((1+n)+n), S (Fin.cast (split_odd! n) i) := by
-    rw [Finset.sum_equiv (Fin.castOrderIso (split_odd! n)).symm.toEquiv]
+    rw [Finset.sum_equiv (Fin.castIso (split_odd! n)).symm.toEquiv]
     · intro i
-      simp only [mem_univ, Fin.castOrderIso, RelIso.coe_fn_toEquiv]
+      simp only [mem_univ, Fin.castIso, RelIso.coe_fn_toEquiv]
     · exact fun _ _ => rfl
   rw [h1, Fin.sum_univ_add, Fin.sum_univ_add]
   simp only [univ_unique, Fin.default_eq_zero, Fin.isValue, sum_singleton, Function.comp_apply]

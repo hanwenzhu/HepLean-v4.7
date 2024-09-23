@@ -109,13 +109,13 @@ lemma countColorQuot_eq_countId_iff_of_isSome (hl : l.OnlyUniqueDuals) (i : Fin 
       Bool.decide_or, zero_add, Nat.reduceAdd, cond_true, List.length_cons, List.length_singleton]
     refine Iff.intro (fun h => ?_) (fun h => ?_)
     · by_contra hn
-      have hn' : (decide (l.val[↑i].toColor = l.val[↑((l.getDual? i).get hi)].toColor) ||
-        decide (l.val[↑i].toColor = 𝓒.τ l.val[↑((l.getDual? i).get hi)].toColor)) = false := by
-        simpa using hn
+      have hn' : (decide (l.val[i].toColor = l.val[((l.getDual? i).get hi)].toColor) ||
+        decide (l.val[i].toColor = 𝓒.τ l.val[((l.getDual? i).get hi)].toColor)) = false := by
+        simpa [not_or] using hn
       erw [hn'] at h
       simp at h
-    · have hn' : (decide (l.val[↑i].toColor = l.val[↑((l.getDual? i).get hi)].toColor) ||
-        decide (l.val[↑i].toColor = 𝓒.τ l.val[↑((l.getDual? i).get hi)].toColor)) = true := by
+    · have hn' : (decide (l.val[i].toColor = l.val[((l.getDual? i).get hi)].toColor) ||
+        decide (l.val[i].toColor = 𝓒.τ l.val[((l.getDual? i).get hi)].toColor)) = true := by
         simpa using h
       erw [hn']
       rfl
@@ -224,7 +224,7 @@ lemma countSelf_contrIndexList_eq_zero_or_one (I : Index 𝓒.Color) :
 lemma countSelf_contrIndexList_eq_zero_of_zero (I : Index 𝓒.Color) (h : l.countSelf I = 0) :
     l.contrIndexList.countSelf I = 0 := by
   rw [countSelf_eq_zero] at h ⊢
-  simp_all [contrIndexList]
+  simp_all [contrIndexList, List.mem_filter]
 
 lemma countSelf_contrIndexList_le_countSelf (I : Index 𝓒.Color) :
     l.contrIndexList.countSelf I ≤ l.countSelf I := by
@@ -299,7 +299,7 @@ lemma countSelf_eq_countDual_iff_of_isSome (hl : l.OnlyUniqueDuals)
       Nat.reduceAdd, cond_true]
     by_cases hn : l.colorMap i = 𝓒.τ (l.colorMap ((l.getDual? i).get hi))
     · simp only [hn, true_or, iff_true]
-      have hn' : decide (l.val[↑i].toColor = 𝓒.τ l.val[↑((l.getDual? i).get hi)].toColor)
+      have hn' : decide (l.val[i].toColor = 𝓒.τ l.val[((l.getDual? i).get hi)].toColor)
         = true := by simpa [colorMap] using hn
       erw [hn']
       simp only [cond_true]
@@ -308,19 +308,19 @@ lemma countSelf_eq_countDual_iff_of_isSome (hl : l.OnlyUniqueDuals)
         exact (𝓒.τ_involutive _).symm
       simp only [colorMap, List.get_eq_getElem] at hτ
       erw [hτ]
-    · have hn' : decide (l.val[↑i].toColor = 𝓒.τ l.val[↑((l.getDual? i).get hi)].toColor) =
+    · have hn' : decide (l.val[i].toColor = 𝓒.τ l.val[((l.getDual? i).get hi)].toColor) =
           false := by simpa [colorMap] using hn
       erw [hn']
       simp only [cond_false, hn, false_or]
       by_cases hm : l.colorMap i = 𝓒.τ (l.colorMap i)
       · trans True
         · simp only [iff_true]
-          have hm' : decide (l.val[↑i].toColor = 𝓒.τ l.val[↑i].toColor) = true := by simpa using hm
+          have hm' : decide (l.val[i].toColor = 𝓒.τ l.val[i].toColor) = true := by simpa using hm
           erw [hm']
           simp only [cond_true]
-          have hm'' : decide (l.val[↑i].toColor = l.val[↑((l.getDual? i).get hi)].toColor)
+          have hm'' : decide (l.val[i].toColor = l.val[((l.getDual? i).get hi)].toColor)
               = false := by
-            simp only [Fin.getElem_fin, decide_eq_false_iff_not]
+            simp only [getElem_fin, Fin.eta, decide_eq_false_iff_not]
             simp only [colorMap, List.get_eq_getElem] at hm
             erw [hm]
             by_contra hn'
@@ -334,13 +334,13 @@ lemma countSelf_eq_countDual_iff_of_isSome (hl : l.OnlyUniqueDuals)
         · exact true_iff_iff.mpr hm
       · simp only [hm, iff_false, ne_eq]
         simp only [colorMap, List.get_eq_getElem] at hm
-        have hm' : decide (l.val[↑i].toColor = 𝓒.τ l.val[↑i].toColor) = false := by simpa using hm
+        have hm' : decide (l.val[i].toColor = 𝓒.τ l.val[i].toColor) = false := by simpa using hm
         erw [hm']
         simp only [cond_false, ne_eq]
-        by_cases hm'' : decide (l.val[↑i].toColor = l.val[↑((l.getDual? i).get hi)].toColor) = true
+        by_cases hm'' : decide (l.val[i].toColor = l.val[((l.getDual? i).get hi)].toColor) = true
         · erw [hm'']
           exact Nat.add_one_ne_zero 1
-        · have hm''' : decide (l.val[↑i].toColor = l.val[↑((l.getDual? i).get hi)].toColor)
+        · have hm''' : decide (l.val[i].toColor = l.val[((l.getDual? i).get hi)].toColor)
               = false := by
             simpa using hm''
           erw [hm''']
@@ -355,7 +355,7 @@ namespace ColorCond
 
 variable {l l2 l3 : IndexList 𝓒.Color}
 
-omit [DecidableEq 𝓒.Color] in
+-- omit [DecidableEq 𝓒.Color] in
 lemma iff_withDual :
     l.ColorCond ↔ ∀ (i : l.withDual), 𝓒.τ
     (l.colorMap ((l.getDual? i).get (l.withDual_isSome i))) = l.colorMap i := by
@@ -383,11 +383,11 @@ lemma iff_withDual :
       simp only at hii
       rw [← hii]
       exact (𝓒.τ_involutive _).symm
-    · simp only [Function.comp_apply, Option.guard, hi, Bool.false_eq_true, ↓reduceIte,
+    · simp only [Function.comp_apply, Option.guard, hi, ↓reduceIte,
       Option.map_none', Option.map_eq_none']
       exact Option.not_isSome_iff_eq_none.mp hi
 
-omit [DecidableEq 𝓒.Color] in
+-- omit [DecidableEq 𝓒.Color] in
 lemma iff_on_isSome : l.ColorCond ↔ ∀ (i : Fin l.length) (h : (l.getDual? i).isSome), 𝓒.τ
     (l.colorMap ((l.getDual? i).get h)) = l.colorMap i := by
   rw [iff_withDual]
@@ -482,7 +482,7 @@ lemma iff_countColorCond (hl : l.OnlyUniqueDuals) :
     rw [countSelf_neq_zero]
     exact hmem
 
-omit [DecidableEq 𝓒.Color] in
+-- omit [DecidableEq 𝓒.Color] in
 lemma assoc (h : ColorCond (l ++ l2 ++ l3)) : ColorCond (l ++ (l2 ++ l3)) := by
   rw [← append_assoc]
   exact h
@@ -533,7 +533,7 @@ lemma swap (hl : (l ++ l2 ++ l3).OnlyUniqueDuals) (h : ColorCond (l ++ l2 ++ l3)
 
 -/
 
-omit [DecidableEq 𝓒.Color] in
+-- omit [DecidableEq 𝓒.Color] in
 lemma contrIndexList : ColorCond l.contrIndexList := by
   funext i
   simp [Option.guard]
@@ -572,8 +572,8 @@ def bool (l : IndexList 𝓒.Color) : Bool :=
 
 lemma iff_bool : l.ColorCond ↔ bool l := by
   rw [iff_withDual, bool]
-  simp only [Subtype.forall, mem_withDual_iff_isSome, Bool.if_false_right, Bool.and_true,
-    decide_eq_true_eq]
+  simp only [Subtype.forall, mem_withDual_iff_isSome, ite_eq_left_iff, not_forall,
+    forall_exists_index, imp_false, not_not]
 
 end ColorCond
 

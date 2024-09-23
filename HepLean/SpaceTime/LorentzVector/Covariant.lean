@@ -18,6 +18,8 @@ In this section we define covariant Lorentz tensors.
 
 noncomputable section
 
+open BigOperators
+
 /- The number of space dimensions . -/
 variable (d : ℕ)
 
@@ -28,7 +30,7 @@ def CovariantLorentzVector : Type := (Fin 1 ⊕ Fin d) → ℝ
 instance : AddCommMonoid (CovariantLorentzVector d) := Pi.addCommMonoid
 
 /-- An instance of a module on `LorentzVector`. -/
-noncomputable instance : Module ℝ (CovariantLorentzVector d) := Pi.module _ _ _
+noncomputable instance instModuleRealCovariantLorentzVector : Module ℝ (CovariantLorentzVector d) := Pi.module _ _ _
 
 instance : AddCommGroup (CovariantLorentzVector d) := Pi.addCommGroup
 
@@ -50,7 +52,7 @@ lemma decomp_stdBasis (v : CovariantLorentzVector d) : ∑ i, v i • stdBasis i
   rw [Finset.sum_apply, Finset.sum_eq_single_of_mem ν]
   · simp only [HSMul.hSMul, SMul.smul, stdBasis]
     erw [Pi.basisFun_apply]
-    simp only [Pi.single_eq_same, mul_one]
+    simp only [LinearMap.stdBasis_apply', ↓reduceIte, mul_one]
   · exact Finset.mem_univ ν
   · intros b _ hbi
     simp only [HSMul.hSMul, SMul.smul, stdBasis, mul_eq_zero]

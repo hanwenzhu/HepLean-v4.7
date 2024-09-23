@@ -101,7 +101,7 @@ def withUniqueDualInOther : Finset (Fin l.length) :=
 ## Basic properties
 
 -/
-omit [IndexNotation X] [Fintype X] [DecidableEq X]
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X]
 
 @[simp, nolint simpNF]
 lemma mem_withDual_of_mem_withUniqueDual (i : Fin l.length) (h : i ∈ l.withUniqueDual) :
@@ -171,7 +171,7 @@ lemma withDual_disjoint_withoutDual : Disjoint l.withDual l.withoutDual := by
   by_contra hn
   subst hn
   simp_all only [withDual, Finset.mem_filter, Finset.mem_univ, true_and, withoutDual,
-    Option.isNone_iff_eq_none, Option.isSome_none, Bool.false_eq_true]
+    Option.isNone_iff_eq_none, Option.isSome_none]
 
 lemma not_mem_withDual_of_mem_withoutDual (i : Fin l.length) (h : i ∈ l.withoutDual) :
     i ∉ l.withDual := by
@@ -293,6 +293,8 @@ lemma getDual?_isSome_iff_exists (i : Fin l.length) :
     (l.getDual? i).isSome ↔ ∃ j, l.AreDualInSelf i j := by
   rw [getDual?, Fin.isSome_find_iff]
 
+lemma Fin.ge_of_eq {a b : Fin n} (hab : a = b) : b ≤ a := Nat.le_of_eq <| congr_arg _ hab.symm
+
 lemma getDual?_of_areDualInSelf (h : l.AreDualInSelf i j) :
     l.getDual? j = i ∨ l.getDual? i = j ∨ l.getDual? j = l.getDual? i := by
   have h3 : (l.getDual? i).isSome := by
@@ -317,7 +319,7 @@ lemma getDual?_of_areDualInSelf (h : l.AreDualInSelf i j) :
       apply Or.inl
       have hj := hk.2 j h
       simp only [Option.some.injEq]
-      exact Fin.le_antisymm hj hjk
+      exact le_antisymm hj hjk
     · apply Or.inr
       apply Or.inr
       rw [getDual?, Fin.find_eq_some_iff]

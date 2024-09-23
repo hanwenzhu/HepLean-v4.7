@@ -50,7 +50,7 @@ def append (h : AppendCond l l2) : ColorIndexList 𝓒 where
   can be appended to form a `ColorIndexList`. -/
 scoped[IndexNotation.ColorIndexList] notation l " ++["h"] " l2 => append l l2 h
 
-omit [DecidableEq 𝓒.Color] in
+-- omit [DecidableEq 𝓒.Color] in
 @[simp]
 lemma append_toIndexList (h : AppendCond l l2) :
     (l ++[h] l2).toIndexList = l.toIndexList ++ l2.toIndexList := rfl
@@ -113,16 +113,18 @@ def bool (l l2 : IndexList 𝓒.Color) : Bool :=
   else
     ColorCond.bool (l ++ l2)
 
-omit [IndexNotation 𝓒.Color] in
+-- omit [IndexNotation 𝓒.Color] in
 lemma bool_iff (l l2 : IndexList 𝓒.Color) :
     bool l l2 ↔ (l ++ l2).withUniqueDual = (l ++ l2).withDual ∧ ColorCond.bool (l ++ l2) := by
   simp [bool]
 
 lemma iff_bool (l l2 : ColorIndexList 𝓒) : AppendCond l l2 ↔ bool l.toIndexList l2.toIndexList := by
   rw [AppendCond]
-  simp only [bool, ite_not, Bool.if_false_right, Bool.and_eq_true, decide_eq_true_eq]
+  simp only [bool, ite_not, Bool.and_eq_true, decide_eq_true_eq]
   rw [ColorCond.iff_bool]
-  exact Eq.to_iff rfl
+  simp only [Bool.ite_eq_true_distrib, if_false_right, and_congr_left_iff]
+  intro
+  rfl
 
 lemma countId_contr_fst_eq_zero_mem_snd (h : AppendCond l l2) {I : Index 𝓒.Color}
     (hI : I ∈ l2.val) : l.contr.countId I = 0 ↔ l.countId I = 0 := by

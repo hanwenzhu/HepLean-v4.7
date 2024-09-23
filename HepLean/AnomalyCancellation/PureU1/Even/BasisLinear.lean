@@ -63,16 +63,17 @@ lemma ext_δ (S T : Fin (2 * n.succ) → ℚ) (h1 : ∀ i, S (δ₁ i) = T (δ�
     have h2 := h2 j
     have h3 : δ₂ j = i := by
       simp only [succ_eq_add_one, δ₂, Fin.ext_iff, Fin.coe_cast, Fin.coe_natAdd]
-      omega
+      rw [Nat.add_sub_cancel']
+      linarith
     rw [h3] at h2
     exact h2
 
 lemma sum_δ₁_δ₂ (S : Fin (2 * n.succ) → ℚ) :
     ∑ i, S i = ∑ i : Fin n.succ, ((S ∘ δ₁) i + (S ∘ δ₂) i) := by
   have h1 : ∑ i, S i = ∑ i : Fin (n.succ + n.succ), S (Fin.cast (split_equal n.succ) i) := by
-    rw [Finset.sum_equiv (Fin.castOrderIso (split_equal n.succ)).symm.toEquiv]
+    rw [Finset.sum_equiv (Fin.castIso (split_equal n.succ)).symm.toEquiv]
     · intro i
-      simp only [mem_univ, Fin.symm_castOrderIso, RelIso.coe_fn_toEquiv]
+      simp only [mem_univ, Fin.symm_castIso, RelIso.coe_fn_toEquiv]
     · exact fun _ _=> rfl
   rw [h1, Fin.sum_univ_add, Finset.sum_add_distrib]
   rfl
@@ -80,9 +81,9 @@ lemma sum_δ₁_δ₂ (S : Fin (2 * n.succ) → ℚ) :
 lemma sum_δ₁_δ₂' (S : Fin (2 * n.succ) → ℚ) :
     ∑ i, S i = ∑ i : Fin n.succ, ((S ∘ δ₁) i + (S ∘ δ₂) i) := by
   have h1 : ∑ i, S i = ∑ i : Fin (n.succ + n.succ), S (Fin.cast (split_equal n.succ) i) := by
-    rw [Finset.sum_equiv (Fin.castOrderIso (split_equal n.succ)).symm.toEquiv]
+    rw [Finset.sum_equiv (Fin.castIso (split_equal n.succ)).symm.toEquiv]
     · intro i
-      simp only [mem_univ, Fin.symm_castOrderIso, RelIso.coe_fn_toEquiv]
+      simp only [mem_univ, Fin.symm_castIso, RelIso.coe_fn_toEquiv]
     · exact fun _ _ => rfl
   rw [h1, Fin.sum_univ_add, Finset.sum_add_distrib]
   rfl
@@ -90,9 +91,9 @@ lemma sum_δ₁_δ₂' (S : Fin (2 * n.succ) → ℚ) :
 lemma sum_δ!₁_δ!₂ (S : Fin (2 * n.succ) → ℚ) :
     ∑ i, S i = S δ!₃ + S δ!₄ + ∑ i : Fin n, ((S ∘ δ!₁) i + (S ∘ δ!₂) i) := by
   have h1 : ∑ i, S i = ∑ i : Fin (1 + ((n + n) + 1)), S (Fin.cast (n_cond₂ n) i) := by
-    rw [Finset.sum_equiv (Fin.castOrderIso (n_cond₂ n)).symm.toEquiv]
+    rw [Finset.sum_equiv (Fin.castIso (n_cond₂ n)).symm.toEquiv]
     · intro i
-      simp only [mem_univ, Fin.symm_castOrderIso, RelIso.coe_fn_toEquiv]
+      simp only [mem_univ, Fin.symm_castIso, RelIso.coe_fn_toEquiv]
     · exact fun _ _ => rfl
   rw [h1]
   rw [Fin.sum_univ_add, Fin.sum_univ_add, Fin.sum_univ_add, Finset.sum_add_distrib]

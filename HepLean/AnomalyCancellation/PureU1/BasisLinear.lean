@@ -39,7 +39,7 @@ lemma asCharges_ne_castSucc {k j : Fin n} (h : k ≠ j) :
   simp [asCharges]
   split
   · rename_i h1
-    exact False.elim (h (id (Eq.symm h1)))
+    exact False.elim (h (Fin.castSucc_injective _ h1.symm))
   · split
     · rename_i h1 h2
       rw [Fin.ext_iff] at h1 h2

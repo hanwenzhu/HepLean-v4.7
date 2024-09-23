@@ -76,3 +76,7 @@ lemma sortAFL_zero {n : ℕ} (S : (PureU1 n).LinSols) (hS : sortAFL S = 0) : S =
   exact sort_zero S.val h1
 
 end PureU1
+
+variable [Group G] (a : G) in
+@[to_additive] lemma _root_.SemiconjBy.eq_one_iff (h : SemiconjBy a x y): x = 1 ↔ y = 1 := by
+  rw [← conj_eq_one_iff (a := a) (b := x), h.eq, mul_inv_cancel_right]

@@ -84,8 +84,8 @@ lemma asLinear_val (S : linearParameters) : S.asLinear.val = S.asCharges := by
 
 lemma cubic (S : linearParameters) :
     accCube (S.asCharges) = - 54 * S.Q'^3 - 18 * S.Q' * S.Y ^ 2 + S.E'^3 := by
-  simp only [HomogeneousCubic, accCube, cubeTriLin, TriLinearSymm.toCubic_apply,
-    TriLinearSymm.mk₃_toFun_apply_apply]
+  simp only [HomogeneousCubic, accCube, cubeTriLin]
+  rw [TriLinearSymm.toCubic_apply, TriLinearSymm.mk₃_toFun_apply_apply]
   simp only [SMSpecies_numberCharges, Finset.univ_unique, Fin.default_eq_zero, Fin.isValue,
     Finset.sum_singleton]
   repeat erw [speciesVal]
@@ -106,7 +106,7 @@ lemma cubic_zero_E'_zero (S : linearParameters) (hc : accCube (S.asCharges) = 0)
   rw [h1] at hc
   simp only [neg_mul, neg_eq_zero, mul_eq_zero, OfNat.ofNat_ne_zero, false_or] at hc
   cases' hc with hc hc
-  · have h2 := (add_eq_zero_iff_of_nonneg (by nlinarith) (sq_nonneg S.Y)).mp hc
+  · have h2 := (add_eq_zero_iff' (by nlinarith) (sq_nonneg S.Y)).mp hc
     simp only [mul_eq_zero, OfNat.ofNat_ne_zero, ne_eq, not_false_eq_true, pow_eq_zero_iff,
       false_or] at h2
     exact h2.1
@@ -141,11 +141,11 @@ def bijection : linearParameters ≃ (SMNoGrav 1).LinSols where
     erw [speciesVal]
     have h1 := SU3Sol S
     simp only [accSU3, SMSpecies_numberCharges, Finset.univ_unique, Fin.default_eq_zero,
-      Fin.isValue, toSpecies_apply, Nat.reduceMul, Finset.sum_singleton, Prod.mk_zero_zero,
+      Fin.isValue, toSpecies_apply, Nat.reduceMul, Finset.sum_singleton,
       LinearMap.coe_mk, AddHom.coe_mk] at h1
     have h2 := SU2Sol S
     simp only [accSU2, SMSpecies_numberCharges, Finset.univ_unique, Fin.default_eq_zero,
-      Fin.isValue, toSpecies_apply, Nat.reduceMul, Finset.sum_singleton, Prod.mk_zero_zero,
+      Fin.isValue, toSpecies_apply, Nat.reduceMul, Finset.sum_singleton,
       LinearMap.coe_mk, AddHom.coe_mk] at h2
     match i with
     | 0 => rfl
@@ -225,6 +225,7 @@ def tolinearParametersQNeqZero (S : {S : linearParameters // S.Q' ≠ 0 ∧ S.E'
       field_simp
       ring_nf
       simp only [neg_eq_zero, mul_eq_zero, OfNat.ofNat_ne_zero, or_false]
+      push_neg
       exact S.2⟩
 
 /-- A bijection between the type `linearParametersQENeqZero` and linear parameters
@@ -253,10 +254,10 @@ def bijectionLinearParameters :
     · rfl
     · field_simp
       ring_nf
-      field_simp [hQ, hE]
+      field_simp [hQ, hE, mul_comm]
     · field_simp
       ring_nf
-      field_simp [hQ, hE]
+      field_simp [hQ, hE, mul_comm]
 
 /-- The bijection between `linearParametersQENeqZero` and `LinSols` with `Q` and `E` non-zero. -/
 def bijection : linearParametersQENeqZero ≃

@@ -173,7 +173,7 @@ lemma symm (h : ContrPerm l l') : ContrPerm l' l := by
   rw [← Function.comp.assoc, ← h.2.2, Function.comp.assoc, Function.comp.assoc]
   rw [show (l.contr.getDualInOtherEquiv l'.contr) =
     (l'.contr.getDualInOtherEquiv l.contr).symm from rfl]
-  simp only [Equiv.symm_comp_self, CompTriple.comp_eq]
+  simp only [Equiv.symm_comp_self, Function.comp_id]
 
 lemma iff_countSelf : l.ContrPerm l2 ↔ ∀ I, l.contr.countSelf I = l2.contr.countSelf I := by
   refine Iff.intro (fun h I => ?_) (fun h => ?_)
@@ -298,7 +298,9 @@ lemma contrPermEquiv_trans {l l2 l3 : ColorIndexList 𝓒}
   simp only [getDualInOtherEquiv, Equiv.trans_apply, Equiv.subtypeUnivEquiv_symm_apply,
     Equiv.coe_fn_mk, Equiv.subtypeUnivEquiv_apply]
   apply congrArg
-  have h1' : l.contr.countSelf (l.contr.val.get x) = 1 := by simp [contr]
+  have h1' : l.contr.countSelf (l.contr.val.get x) = 1 := by
+    simp [contr]
+    exact countSelf_contrIndexList_get _ _
   rw [iff_countSelf.mp h1, iff_countSelf.mp h2] at h1'
   have h3 : l3.contr.countId (l.contr.val.get x) = 1 := by
     have h' := countSelf_le_countId l3.contr.toIndexList (l.contr.val.get x)
@@ -308,22 +310,24 @@ lemma contrPermEquiv_trans {l l2 l3 : ColorIndexList 𝓒}
   obtain ⟨a, ha⟩ := h3
   trans a
   · rw [← List.mem_singleton, ← ha]
-    simp [AreDualInOther]
+    simp [AreDualInOther, List.mem_filter]
   · symm
     rw [← List.mem_singleton, ← ha]
-    simp [AreDualInOther]
+    simp [AreDualInOther, List.mem_filter]
 
 @[simp]
 lemma contrPermEquiv_self_contr {l : ColorIndexList 𝓒} :
     contrPermEquiv (contr_self : ContrPerm l l.contr) =
-    (Fin.castOrderIso (by simp)).toEquiv := by
+    (Fin.castIso (by simp)).toEquiv := by
   simp only [contrPermEquiv]
   ext1 x
   simp only [getDualInOtherEquiv, Equiv.trans_apply, Equiv.subtypeUnivEquiv_symm_apply,
-    Equiv.coe_fn_mk, Equiv.subtypeUnivEquiv_apply, RelIso.coe_fn_toEquiv, Fin.castOrderIso_apply,
+    Equiv.coe_fn_mk, Equiv.subtypeUnivEquiv_apply, RelIso.coe_fn_toEquiv, Fin.castIso_apply,
     Fin.coe_cast]
   symm
-  have h1' : l.contr.countSelf (l.contr.val.get x) = 1 := by simp [contr]
+  have h1' : l.contr.countSelf (l.contr.val.get x) = 1 := by
+    simp [contr]
+    exact countSelf_contrIndexList_get _ _
   rw [iff_countSelf.mp contr_self] at h1'
   have h3 : l.contr.contr.countId (l.contr.val.get x) = 1 := by
     have h' := countSelf_le_countId l.contr.contr.toIndexList (l.contr.val.get x)
@@ -333,7 +337,7 @@ lemma contrPermEquiv_self_contr {l : ColorIndexList 𝓒} :
   obtain ⟨a, ha⟩ := h3
   trans a
   · rw [← List.mem_singleton, ← ha]
-    simp [AreDualInOther]
+    simp [AreDualInOther, List.mem_filter]
   · symm
     rw [← List.mem_singleton, ← ha]
     simp only [AreDualInOther, List.mem_filter, List.mem_finRange,
@@ -342,7 +346,7 @@ lemma contrPermEquiv_self_contr {l : ColorIndexList 𝓒} :
 @[simp]
 lemma contrPermEquiv_contr_self {l : ColorIndexList 𝓒} :
     contrPermEquiv (self_contr : ContrPerm l.contr l) =
-    (Fin.castOrderIso (by simp)).toEquiv := by
+    (Fin.castIso (by simp)).toEquiv := by
   rw [← contrPermEquiv_symm, contrPermEquiv_self_contr]
   rfl
 

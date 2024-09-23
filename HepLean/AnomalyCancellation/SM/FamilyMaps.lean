@@ -71,7 +71,7 @@ def speciesEmbed (m n : ℕ) :
     simp only [SMSpecies_numberCharges, HSMul.hSMul, ACCSystemCharges.chargesModule_smul,
       eq_ratCast, Rat.cast_eq_id, id_eq]
     by_cases hi : i.val < m
-    · erw [dif_pos hi, dif_pos hi]
+    · erw [dif_pos hi, dif_pos hi]; rfl
     · erw [dif_neg hi, dif_neg hi]
       exact Eq.symm (Rat.mul_zero a)
 

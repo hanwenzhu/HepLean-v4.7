@@ -124,7 +124,7 @@ instance lorentzGroupIsGroup : Group (LorentzGroup d) where
   one_mul A := Subtype.eq (Matrix.one_mul A.1)
   mul_one A := Subtype.eq (Matrix.mul_one A.1)
   inv A := ⟨minkowskiMetric.dual A.1, LorentzGroup.dual_mem A.2⟩
-  inv_mul_cancel A := Subtype.eq (LorentzGroup.mem_iff_dual_mul_self.mp A.2)
+  mul_left_inv A := Subtype.eq (LorentzGroup.mem_iff_dual_mul_self.mp A.2)
 
 /-- `LorentzGroup` has the subtype topology. -/
 instance : TopologicalSpace (LorentzGroup d) := instTopologicalSpaceSubtype
@@ -142,7 +142,7 @@ lemma subtype_inv_mul : (Subtype.val Λ)⁻¹ * (Subtype.val Λ) = 1 := by
   trans Subtype.val (Λ⁻¹ * Λ)
   · rw [← coe_inv]
     rfl
-  · rw [inv_mul_cancel Λ]
+  · rw [mul_left_inv Λ]
     rfl
 
 @[simp]
@@ -150,7 +150,7 @@ lemma subtype_mul_inv : (Subtype.val Λ) * (Subtype.val Λ)⁻¹ = 1 := by
   trans Subtype.val (Λ * Λ⁻¹)
   · rw [← coe_inv]
     rfl
-  · rw [mul_inv_cancel Λ]
+  · rw [mul_right_inv Λ]
     rfl
 
 @[simp]
@@ -271,6 +271,10 @@ def toNormOneLorentzVector (Λ : LorentzGroup d) : NormOneLorentzVector d :=
 /-- The time like element of a Lorentz matrix. -/
 @[simp]
 def timeComp (Λ : LorentzGroup d) : ℝ := Λ.1 (Sum.inl 0) (Sum.inl 0)
+
+theorem _root_.Matrix.mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
+    (M : Matrix m n R) (j : n) :
+    M *ᵥ Pi.single j 1 = Mᵀ j := by ext; simp
 
 lemma timeComp_eq_toNormOneLorentzVector : timeComp Λ = (toNormOneLorentzVector Λ).1.time := by
   simp only [time, toNormOneLorentzVector, timeVec, Fin.isValue, timeComp]

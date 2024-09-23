@@ -66,14 +66,14 @@ lemma ext' {l l' : ColorIndexList 𝓒} (h : l.toIndexList = l'.toIndexList) : l
 /-! TODO: `orderEmbOfFin_univ` should be replaced with a mathlib lemma if possible. -/
 lemma orderEmbOfFin_univ (n m : ℕ) (h : n = m) :
     Finset.orderEmbOfFin (Finset.univ : Finset (Fin n)) (by simp [h]: Finset.univ.card = m) =
-    (Fin.castOrderIso h.symm).toOrderEmbedding := by
+    (Fin.castIso h.symm).toOrderEmbedding := by
   symm
-  have h1 : (Fin.castOrderIso h.symm).toFun =
+  have h1 : (Fin.castIso h.symm).toFun =
       (Finset.orderEmbOfFin (Finset.univ : Finset (Fin n))
       (by simp [h]: Finset.univ.card = m)).toFun := by
     apply Finset.orderEmbOfFin_unique
     intro x
-    exact Finset.mem_univ ((Fin.castOrderIso (Eq.symm h)).toFun x)
+    exact Finset.mem_univ ((Fin.castIso (Eq.symm h)).toFun x)
     exact fun ⦃a b⦄ a => a
   exact Eq.symm (Fin.orderEmbedding_eq (congrArg Set.range (id (Eq.symm h1))))
 

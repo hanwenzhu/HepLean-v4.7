@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import Mathlib.Tactic.Polyrith
-import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.Data.Fintype.BigOperators
 /-!
 # Linear maps
@@ -14,6 +15,19 @@ quadratic and cubic equations.
 
 -/
 /-! TODO: Replace the definitions in this file with Mathlib definitions. -/
+
+/-- Equivariant functions. -/
+-- Porting note: This linter does not exist yet
+-- @[nolint has_nonempty_instance]
+structure MulActionHom' (φ : M → N) (X : Type*) [SMul M X] (Y : Type*) [SMul N Y] where
+  /-- The underlying function. -/
+  protected toFun : X → Y
+  /-- The proposition that the function preserves the action. -/
+  protected map_smul' : ∀ (m : M) (x : X), toFun (m • x) = (φ m) • toFun x
+
+/-- `φ`-equivariant functions `X → Y`,
+where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively -/
+notation:25 (name := «MulActionHom'Local≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom' φ X Y
 
 /-- The structure defining a homogeneous quadratic equation. -/
 @[simp]
@@ -127,11 +141,15 @@ def toHomogeneousQuad {V : Type} [AddCommMonoid V] [Module ℚ V]
     ring_nf
     rfl
 
+@[simp]
+theorem toHomogeneousQuad_apply {V : Type} [AddCommMonoid V] [Module ℚ V]
+    (τ : BiLinearSymm V) (S : V) : τ.toHomogeneousQuad S = τ S S := rfl
+
 lemma toHomogeneousQuad_add {V : Type} [AddCommMonoid V] [Module ℚ V]
     (τ : BiLinearSymm V) (S T : V) :
     τ.toHomogeneousQuad (S + T) = τ.toHomogeneousQuad S +
     τ.toHomogeneousQuad T + 2 * τ S T := by
-  simp only [HomogeneousQuadratic, toHomogeneousQuad_apply, map_add]
+  simp only [HomogeneousQuadratic, τ.toHomogeneousQuad_apply, map_add]
   rw [τ.map_add₁, τ.map_add₁, τ.swap T S]
   ring
 
@@ -287,11 +305,15 @@ def toCubic {charges : Type} [AddCommMonoid charges] [Module ℚ charges]
     rw [τ.map_smul₁, τ.map_smul₂, τ.map_smul₃]
     ring
 
+@[simp]
+theorem toCubic_apply {charges : Type} [AddCommMonoid charges] [Module ℚ charges]
+    (τ : TriLinearSymm charges) (S : charges) : τ.toCubic S = τ S S S := rfl
+
 lemma toCubic_add {charges : Type} [AddCommMonoid charges] [Module ℚ charges]
     (τ : TriLinearSymm charges) (S T : charges) :
     τ.toCubic (S + T) = τ.toCubic S +
     τ.toCubic T + 3 * τ S S T + 3 * τ T T S := by
-  simp only [HomogeneousCubic, toCubic_apply]
+  simp only [HomogeneousCubic, τ.toCubic_apply]
   rw [τ.map_add₁, τ.map_add₂, τ.map_add₂, τ.map_add₃, τ.map_add₃, τ.map_add₃, τ.map_add₃]
   rw [τ.swap₂ S T S, τ.swap₁ T S S, τ.swap₂ S T S, τ.swap₂ T S T, τ.swap₁ S T T, τ.swap₂ T S T]
   ring

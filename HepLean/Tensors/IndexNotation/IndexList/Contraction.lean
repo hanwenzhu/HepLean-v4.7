@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import HepLean.Tensors.IndexNotation.IndexList.Equivs
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Finset.Sort
 import Mathlib.Tactic.FinCases
 /-!
@@ -100,6 +100,8 @@ lemma contrIndexList_colorMap (i : Fin l.contrIndexList.length) : l.contrIndexLi
     List.getElem_ofFn, Function.comp_apply]
   rfl
 
+lemma _root_.Subtype.coe_ne_coe {α} {p : α → Prop} {a b : Subtype p} : (a : α) ≠ b ↔ a ≠ b := Subtype.coe_injective.ne_iff
+
 lemma contrIndexList_areDualInSelf (i j : Fin l.contrIndexList.length) :
     l.contrIndexList.AreDualInSelf i j ↔
     l.AreDualInSelf (l.withoutDualEquiv (Fin.cast l.contrIndexList_length i)).1
@@ -159,7 +161,7 @@ lemma contrIndexList_of_withDual_empty (h : l.withDual = ∅) : l.contrIndexList
   simp only [withoutDualEquiv, RelIso.coe_fn_toEquiv, Finset.coe_orderIsoOfFin_apply]
   simp only [h1]
   rw [(Finset.orderEmbOfFin_unique' _
-    (fun x => Finset.mem_univ ((Fin.castOrderIso _).toOrderEmbedding x))).symm]
+    (fun x => Finset.mem_univ ((Fin.castIso _).toOrderEmbedding x))).symm]
   · exact Eq.symm (Nat.add_zero n)
   · rw [h1]
     exact Finset.card_fin l.length

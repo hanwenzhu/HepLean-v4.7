@@ -81,13 +81,18 @@ def listCharIndex (l : List Char) : Prop :=
     else
       listCharIndexTail sfst l.tail
 
-omit [Fintype X] [DecidableEq X] in
+-- omit [Fintype X] [DecidableEq X] in
 /-- An auxillary rewrite lemma to prove that `listCharIndex` is decidable. -/
 lemma listCharIndex_iff (l : List Char) : listCharIndex X l
     ↔ (if h : l = [] then True else
     let sfst := l.head h
     if ¬ isNotationChar X sfst then False
     else listCharIndexTail sfst l.tail) := by rfl
+
+instance _root_.instDecidableDite {c : Prop} {t : c → Prop} {e : ¬c → Prop} [dC : Decidable c] [dT : ∀ h, Decidable (t h)] [dE : ∀ h, Decidable (e h)] : Decidable (if h : c then t h else e h)  :=
+  match dC with
+  | isTrue hc  => dT hc
+  | isFalse hc => dE hc
 
 instance : Decidable (listCharIndex X l) :=
   @decidable_of_decidable_of_iff _ _
@@ -118,7 +123,7 @@ def toColor (I : Index X) : X := I.1
 /-- The natural number representating the id of an index. -/
 def id (I : Index X) : ℕ := I.2
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 lemma eq_iff_color_eq_and_id_eq (I J : Index X) : I = J ↔ I.toColor = J.toColor ∧ I.id = J.id := by
   refine Iff.intro (fun h => Prod.mk.inj_iff.mp h) (fun h => ?_)
   · cases I
@@ -138,7 +143,10 @@ end Index
   e.g. `ᵘ¹²` or `ᵤ₄₃` etc. -/
 def IndexRep : Type := {s : String // listCharIndex X s.toList ∧ s.toList ≠ []}
 
-instance : DecidableEq (IndexRep X) := Subtype.instDecidableEq
+instance : DecidableEq (IndexRep X) :=
+  fun ⟨a, h₁⟩ ⟨b, h₂⟩ =>
+    if h : a = b then isTrue (by subst h; exact rfl)
+    else isFalse (fun h' => Subtype.noConfusion h' (fun h' => absurd h' h))
 
 namespace IndexRep
 
@@ -156,7 +164,7 @@ def head (s : IndexRep X) : charList X :=
     have h2 := s.prop.2
     simp only [listCharIndex, toList, Bool.not_eq_true, ne_eq, if_false_left,
       Bool.not_eq_false] at h
-    simp_all only [toList, ne_eq, Bool.not_eq_true, ↓reduceDIte]
+    simp_all only [toList, ne_eq, Bool.not_eq_true, ↓reduceDite]
     simpa [isNotationChar] using h.1⟩
 
 /-- The color associated to an index. -/

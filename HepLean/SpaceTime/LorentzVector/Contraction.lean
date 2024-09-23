@@ -20,7 +20,7 @@ to define the contraction between indices of Lorentz tensors.
 
 noncomputable section
 
-open TensorProduct
+open TensorProduct BigOperators
 
 namespace LorentzVector
 
@@ -74,13 +74,13 @@ lemma contrUpDown_stdBasis_left (x : LorentzVector d) (i : Fin 1 ⊕ Fin d) :
   rw [Finset.sum_eq_single_of_mem i]
   · simp only [CovariantLorentzVector.stdBasis]
     erw [Pi.basisFun_apply]
-    simp only [Pi.single_eq_same, mul_one]
+    simp only [LinearMap.stdBasis_apply', ↓reduceIte, mul_one]
   · exact Finset.mem_univ i
   · intro b _ hbi
     simp only [CovariantLorentzVector.stdBasis, mul_eq_zero]
     erw [Pi.basisFun_apply]
-    simp only [Pi.single_apply, ite_eq_right_iff, one_ne_zero, imp_false]
-    apply Or.inr hbi
+    simp only [LinearMap.stdBasis_apply', ite_eq_right_iff, one_ne_zero, imp_false]
+    apply Or.inr hbi.symm
 
 @[simp]
 lemma contrUpDown_stdBasis_right (x : CovariantLorentzVector d) (i : Fin 1 ⊕ Fin d) :
@@ -88,13 +88,14 @@ lemma contrUpDown_stdBasis_right (x : CovariantLorentzVector d) (i : Fin 1 ⊕ F
   simp only [contrUpDown, contrUpDownBi, lift.tmul, LinearMap.coe_mk, AddHom.coe_mk]
   rw [Finset.sum_eq_single_of_mem i]
   · erw [Pi.basisFun_apply]
-    simp only [Pi.single_eq_same, one_mul]
+    simp only [LinearMap.stdBasis_apply', ↓reduceIte, one_mul]
   · exact Finset.mem_univ i
   · intro b _ hbi
     simp only [CovariantLorentzVector.stdBasis, mul_eq_zero]
     erw [Pi.basisFun_apply]
-    simp only [Pi.single_apply, ite_eq_right_iff, one_ne_zero, imp_false]
-    exact Or.intro_left (x b = 0) hbi
+    left
+    simp only [LinearMap.stdBasis_apply', ite_eq_right_iff, one_ne_zero, imp_false]
+    exact hbi.symm
 
 /-- The linear map defining the contraction of a covariant Lorentz vector
   and a contravariant Lorentz vector. -/
@@ -226,7 +227,7 @@ lemma contrLeft_asCoTenProd (x : LorentzVector d) :
   rw [tmul_sum]
   rw [map_sum]
   refine Finset.sum_congr rfl (fun μ _ => ?_)
-  simp only [contrLeftAux, LinearEquiv.refl_toLinearMap, tmul_smul, LinearMapClass.map_smul,
+  simp only [contrLeftAux, LinearEquiv.refl_toLinearMap, tmul_smul, map_smul,
     LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, assoc_symm_tmul, map_tmul,
     contrUpDown_stdBasis_left, LinearMap.id_coe, id_eq, lid_tmul]
   exact smul_smul (η μ μ) (x μ) (CovariantLorentzVector.stdBasis μ)
@@ -247,16 +248,16 @@ lemma asTenProd_contr_asCoTenProd :
   · change (η μ μ * (η μ μ * e μ μ)) • e μ ⊗ₜ[ℝ] CovariantLorentzVector.stdBasis μ = _
     rw [LorentzVector.stdBasis]
     erw [Pi.basisFun_apply]
-    simp only [Pi.single_eq_same, mul_one, η_apply_mul_η_apply_diag, one_smul]
+    simp only [LinearMap.stdBasis_apply', ↓reduceIte, mul_one, η_apply_mul_η_apply_diag, one_smul]
   · exact Finset.mem_univ μ
   · intro ν _ hμν
     rw [tmul_smul]
     change (η ν ν * (η μ μ * e μ ν)) • (e μ ⊗ₜ[ℝ] CovariantLorentzVector.stdBasis ν) = _
     rw [LorentzVector.stdBasis]
     erw [Pi.basisFun_apply]
-    simp only [Pi.single_apply, mul_ite, mul_one, mul_zero, ite_smul, zero_smul,
+    simp only [LinearMap.stdBasis_apply', mul_ite, mul_one, mul_zero, ite_smul, zero_smul,
       ite_eq_right_iff, smul_eq_zero, mul_eq_zero]
-    exact fun a => False.elim (hμν a)
+    exact fun a => False.elim (hμν a.symm)
 
 @[simp]
 lemma asCoTenProd_contr_asTenProd :
@@ -269,23 +270,23 @@ lemma asCoTenProd_contr_asTenProd :
     Finset.sum_singleton, map_add, comm_tmul, map_sum]
   refine Finset.sum_congr rfl (fun μ _ => ?_)
   rw [smul_tmul, TensorProduct.assoc_tmul]
-  simp only [tmul_smul, LinearMapClass.map_smul, map_tmul, LinearMap.id_coe, id_eq,
+  simp only [tmul_smul, map_smul, map_tmul, LinearMap.id_coe, id_eq,
     contrLeft_asTenProd]
   rw [tmul_sum, Finset.sum_eq_single_of_mem μ, tmul_smul, smul_smul, LorentzVector.stdBasis]
   · erw [Pi.basisFun_apply]
-    simp only [Pi.single_eq_same, mul_one, η_apply_mul_η_apply_diag, one_smul]
+    simp only [LinearMap.stdBasis_apply', ↓reduceIte, mul_one, η_apply_mul_η_apply_diag, one_smul]
   · exact Finset.mem_univ μ
   · intro ν _ hμν
     rw [tmul_smul]
     rw [LorentzVector.stdBasis]
     erw [Pi.basisFun_apply]
-    simp only [Pi.single_apply, mul_ite, mul_one, mul_zero, ite_smul, zero_smul,
-      ite_eq_right_iff, smul_eq_zero, mul_eq_zero]
-    exact fun a => False.elim (hμν a)
+    simp only [LinearMap.stdBasis_apply', mul_ite, mul_one, mul_zero, ite_smul, zero_smul,
+      ite_eq_right_iff, smul_eq_zero]
+    exact fun a => False.elim (hμν a.symm)
 
 lemma asTenProd_invariant (g : LorentzGroup d) :
     TensorProduct.map (LorentzVector.rep g) (LorentzVector.rep g) asTenProd = asTenProd := by
-  simp only [asTenProd, map_sum, LinearMapClass.map_smul, map_tmul, rep_apply_stdBasis,
+  simp only [asTenProd, map_sum, map_smul, map_tmul, rep_apply_stdBasis,
     Matrix.transpose_apply]
   trans ∑ μ : Fin 1 ⊕ Fin d, ∑ ν : Fin 1 ⊕ Fin d, ∑ φ : Fin 1 ⊕ Fin d,
       η μ ν • (g.1 φ μ • e φ) ⊗ₜ[ℝ] ∑ ρ : Fin 1 ⊕ Fin d, g.1 ρ ν • e ρ
@@ -324,7 +325,7 @@ open CovariantLorentzVector in
 lemma asCoTenProd_invariant (g : LorentzGroup d) :
     TensorProduct.map (CovariantLorentzVector.rep g) (CovariantLorentzVector.rep g)
       asCoTenProd = asCoTenProd := by
-  simp only [asCoTenProd, map_sum, LinearMapClass.map_smul, map_tmul,
+  simp only [asCoTenProd, map_sum, map_smul, map_tmul,
     CovariantLorentzVector.rep_apply_stdBasis, Matrix.transpose_apply]
   trans ∑ μ : Fin 1 ⊕ Fin d, ∑ ν : Fin 1 ⊕ Fin d, ∑ φ : Fin 1 ⊕ Fin d,
       η μ ν • (g⁻¹.1 μ φ • CovariantLorentzVector.stdBasis φ) ⊗ₜ[ℝ]

@@ -13,6 +13,8 @@ import Mathlib.RepresentationTheory.Basic
 -/
 noncomputable section
 
+open BigOperators
+
 namespace LorentzVector
 
 variable {d : ℕ} (v : LorentzVector d)

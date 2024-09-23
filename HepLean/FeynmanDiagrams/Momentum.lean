@@ -28,7 +28,7 @@ This section is non-computable as we depend on the norm on `F.HalfEdgeMomenta`.
 
 namespace FeynmanDiagram
 
-open CategoryTheory
+open CategoryTheory BigOperators
 open PreFeynmanRule
 
 variable {P : PreFeynmanRule} (F : FeynmanDiagram P) [IsFiniteDiagram F]
@@ -74,7 +74,7 @@ def euclidInner : F.HalfEdgeMomenta →ₗ[ℝ] F.HalfEdgeMomenta →ₗ[ℝ] �
     simp only [euclidInnerAux_symm, map_add, LinearMap.add_apply]
   map_smul' c x := by
     refine LinearMap.ext (fun z => ?_)
-    simp only [euclidInnerAux_symm, LinearMapClass.map_smul, smul_eq_mul, RingHom.id_apply,
+    simp only [euclidInnerAux_symm, map_smul, smul_eq_mul, RingHom.id_apply,
       LinearMap.smul_apply]
 
 /-- The type which associates to each edge a `1`-dimensional vector space.
@@ -83,7 +83,7 @@ def EdgeMomenta : Type := F.𝓔 → ℝ
 
 instance : AddCommGroup F.EdgeMomenta := Pi.addCommGroup
 
-instance : Module ℝ F.EdgeMomenta := Pi.module _ _ _
+instance instModuleRealEdgeMomenta : Module ℝ F.EdgeMomenta := Pi.module _ _ _
 
 /-- The type which assocaites to each ege a `1`-dimensional vector space.
   Corresponding to that spanned by its total inflowing momentum. -/
@@ -91,7 +91,7 @@ def VertexMomenta : Type := F.𝓥 → ℝ
 
 instance : AddCommGroup F.VertexMomenta := Pi.addCommGroup
 
-instance : Module ℝ F.VertexMomenta := Pi.module _ _ _
+instance instModuleRealVertexMomenta : Module ℝ F.VertexMomenta := Pi.module _ _ _
 
 /-- The map from `Fin 2` to `Type` landing on `EdgeMomenta` and `VertexMomenta`. -/
 def EdgeVertexMomentaMap : Fin 2 → Type := fun i =>
@@ -112,9 +112,9 @@ instance (i : Fin 2) : Module ℝ (EdgeVertexMomentaMap F i) :=
 /-- The direct sum of `EdgeMomenta` and `VertexMomenta`. -/
 def EdgeVertexMomenta : Type := DirectSum (Fin 2) (EdgeVertexMomentaMap F)
 
-instance : AddCommGroup F.EdgeVertexMomenta := DirectSum.instAddCommGroup _
+instance : AddCommGroup F.EdgeVertexMomenta := DirectSum.instAddCommGroupDirectSumToAddCommMonoid _
 
-instance : Module ℝ F.EdgeVertexMomenta := DirectSum.instModule
+instance : Module ℝ F.EdgeVertexMomenta := DirectSum.instModuleDirectSumInstAddCommMonoidDirectSum
 
 /-!
 

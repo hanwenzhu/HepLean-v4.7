@@ -39,6 +39,9 @@ instance : DiscreteTopology ℤ₂ := by
 
 instance : TopologicalGroup ℤ₂ := TopologicalGroup.mk
 
+instance _root_.Finite.instDiscreteTopology [TopologicalSpace X] [T1Space X] [Finite X] : DiscreteTopology X :=
+  discreteTopology_iff_forall_isClosed.mpr (· |>.toFinite.isClosed)
+
 /-- A continuous function from `({-1, 1} : Set ℝ)` to `ℤ₂`. -/
 @[simps!]
 def coeForℤ₂ : C(({-1, 1} : Set ℝ), ℤ₂) where
@@ -55,6 +58,11 @@ def detContinuous : C(𝓛 d, ℤ₂) :=
       exact Continuous.matrix_det $
         Continuous.comp' (continuous_iff_le_induced.mpr fun U a => a) continuous_id'
       }
+
+@[simp]
+lemma _root_.toMul_eq_one {α : Type*} [One α] {x : Additive α} :
+    Additive.toMul x = 1 ↔ x = 0 :=
+  Iff.rfl
 
 lemma detContinuous_eq_one (Λ : LorentzGroup d) :
     detContinuous Λ = Additive.toMul 0 ↔ Λ.1.det = 1 := by

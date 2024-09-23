@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 import HepLean.Tensors.IndexNotation.IndexList.CountId
 import Mathlib.Data.Finset.Sort
 import Mathlib.Tactic.FinCases
+import Mathlib.Data.List.OfFn
 /-!
 
 # Equivalences between finsets.
@@ -29,7 +30,19 @@ variable (l l2 l3 : IndexList X)
 def withoutDualEquiv : Fin l.withoutDual.card ≃ l.withoutDual :=
   (Finset.orderIsoOfFin l.withoutDual (by rfl)).toEquiv
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+theorem _root_.List.ext_get_iff {l₁ l₂ : List α} :
+    l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, List.get l₁ ⟨n, h₁⟩ = List.get l₂ ⟨n, h₂⟩ := by
+  constructor
+  · rintro rfl
+    exact ⟨rfl, fun _ _ _ ↦ rfl⟩
+  · intro ⟨h₁, h₂⟩
+    exact List.ext_get h₁ h₂
+
+@[simp] theorem _root_.List.getElem_ofFn {n} (f : Fin n → α) (i : Nat) (h : i < (List.ofFn f).length) :
+    (List.ofFn f)[i] = f ⟨i, by simp_all⟩ := by
+  simp [List.get_ofFn]
+
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 lemma list_ofFn_withoutDualEquiv_eq_sort :
     List.ofFn (Subtype.val ∘ l.withoutDualEquiv) = l.withoutDual.sort (fun i j => i ≤ j) := by
   rw [@List.ext_get_iff]
@@ -55,13 +68,16 @@ def dualEquiv : l.withDual ⊕ Fin l.withoutDual.card ≃ Fin l.length :=
 def getDualEquiv : l.withUniqueDual ≃ l.withUniqueDual where
   toFun x := ⟨(l.getDual? x).get (l.mem_withUniqueDual_isSome x.1 x.2), by
     rw [mem_withUniqueDual_iff_countId_eq_two]
+    erw [l.getDual?_countId]
     simpa using l.countId_eq_two_of_mem_withUniqueDual x.1 x.2⟩
   invFun x := ⟨(l.getDual? x).get (l.mem_withUniqueDual_isSome x.1 x.2), by
     rw [mem_withUniqueDual_iff_countId_eq_two]
+    erw [l.getDual?_countId]
     simpa using l.countId_eq_two_of_mem_withUniqueDual x.1 x.2⟩
   left_inv x := SetCoe.ext <| by
     let d := (l.getDual? x).get (l.mem_withUniqueDual_isSome x.1 x.2)
     have h1 : l.countId (l.val.get d) = 2 := by
+      erw [l.getDual?_countId]
       simpa [d] using l.countId_eq_two_of_mem_withUniqueDual x.1 x.2
     have h2 : ((List.finRange l.length).filter (fun j => l.AreDualInSelf d j)).length = 1 := by
       rw [countId_get, List.countP_eq_length_filter] at h1
@@ -69,13 +85,14 @@ def getDualEquiv : l.withUniqueDual ≃ l.withUniqueDual where
     obtain ⟨a, ha⟩ := List.length_eq_one.mp h2
     trans a
     · rw [← List.mem_singleton, ← ha]
-      simp [d]
+      simp [d, List.mem_filter]
     · symm
       rw [← List.mem_singleton, ← ha]
-      simp [d]
+      simp [d, List.mem_filter]
   right_inv x := SetCoe.ext <| by
     let d := (l.getDual? x).get (l.mem_withUniqueDual_isSome x.1 x.2)
     have h1 : l.countId (l.val.get d) = 2 := by
+      erw [l.getDual?_countId]
       simpa [d] using l.countId_eq_two_of_mem_withUniqueDual x.1 x.2
     have h2 : ((List.finRange l.length).filter (fun j => l.AreDualInSelf d j)).length = 1 := by
       rw [countId_get, List.countP_eq_length_filter] at h1
@@ -83,12 +100,12 @@ def getDualEquiv : l.withUniqueDual ≃ l.withUniqueDual where
     obtain ⟨a, ha⟩ := List.length_eq_one.mp h2
     trans a
     · rw [← List.mem_singleton, ← ha]
-      simp [d]
+      simp [d, List.mem_filter]
     · symm
       rw [← List.mem_singleton, ← ha]
-      simp [d]
+      simp [d, List.mem_filter]
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 @[simp]
 lemma getDual?_getDualEquiv (i : l.withUniqueDual) : l.getDual? (l.getDualEquiv i) = i := by
   have h1 := (Equiv.apply_symm_apply l.getDualEquiv i).symm
@@ -102,13 +119,16 @@ lemma getDual?_getDualEquiv (i : l.withUniqueDual) : l.getDual? (l.getDualEquiv 
 def getDualInOtherEquiv : l.withUniqueDualInOther l2 ≃ l2.withUniqueDualInOther l where
   toFun x := ⟨(l.getDualInOther? l2 x).get (l.mem_withUniqueDualInOther_isSome l2 x.1 x.2), by
     rw [mem_withUniqueDualInOther_iff_countId_eq_one]
+    erw [getDualInOther?_countId_left, getDualInOther?_countId_right]
     simpa using And.comm.mpr (l.countId_eq_one_of_mem_withUniqueDualInOther l2 x.1 x.2)⟩
   invFun x := ⟨(l2.getDualInOther? l x).get (l2.mem_withUniqueDualInOther_isSome l x.1 x.2), by
     rw [mem_withUniqueDualInOther_iff_countId_eq_one]
+    erw [getDualInOther?_countId_left, getDualInOther?_countId_right]
     simpa using And.comm.mpr (l2.countId_eq_one_of_mem_withUniqueDualInOther l x.1 x.2)⟩
   left_inv x := SetCoe.ext <| by
     let d := (l.getDualInOther? l2 x).get (l.mem_withUniqueDualInOther_isSome l2 x.1 x.2)
     have h1 : l.countId (l2.val.get d) = 1 := by
+      erw [getDualInOther?_countId_left]
       simpa [d] using (l.countId_eq_one_of_mem_withUniqueDualInOther l2 x.1 x.2).1
     have h2 : ((List.finRange l.length).filter (fun j => l2.AreDualInOther l d j)).length = 1 := by
       rw [countId_get_other, List.countP_eq_length_filter] at h1
@@ -116,13 +136,14 @@ def getDualInOtherEquiv : l.withUniqueDualInOther l2 ≃ l2.withUniqueDualInOthe
     obtain ⟨a, ha⟩ := List.length_eq_one.mp h2
     trans a
     · rw [← List.mem_singleton, ← ha]
-      simp [d]
+      simp [d, List.mem_filter]
     · symm
       rw [← List.mem_singleton, ← ha]
-      simp [d]
+      simp [d, List.mem_filter]
   right_inv x := SetCoe.ext <| by
     let d := (l2.getDualInOther? l x).get (l2.mem_withUniqueDualInOther_isSome l x.1 x.2)
     have h1 : l2.countId (l.val.get d) = 1 := by
+      erw [getDualInOther?_countId_left]
       simpa [d] using (l2.countId_eq_one_of_mem_withUniqueDualInOther l x.1 x.2).1
     have h2 : ((List.finRange l2.length).filter (fun j => l.AreDualInOther l2 d j)).length = 1 := by
       rw [countId_get_other, List.countP_eq_length_filter] at h1
@@ -130,12 +151,12 @@ def getDualInOtherEquiv : l.withUniqueDualInOther l2 ≃ l2.withUniqueDualInOthe
     obtain ⟨a, ha⟩ := List.length_eq_one.mp h2
     trans a
     · rw [← List.mem_singleton, ← ha]
-      simp [d]
+      simp [d, List.mem_filter]
     · symm
       rw [← List.mem_singleton, ← ha]
-      simp [d]
+      simp [d, List.mem_filter]
 
-omit [IndexNotation X] [Fintype X] in
+-- omit [IndexNotation X] [Fintype X] in
 @[simp]
 lemma getDualInOtherEquiv_self_refl : l.getDualInOtherEquiv l = Equiv.refl _ := by
   apply Equiv.ext
@@ -151,7 +172,7 @@ lemma getDualInOtherEquiv_self_refl : l.getDualInOtherEquiv l = Equiv.refl _ := 
   rw [hx2.2 x.1 (by rfl)]
   exact Option.some_get (getDualInOtherEquiv.proof_1 l l x)
 
-omit [IndexNotation X] [Fintype X] in
+-- omit [IndexNotation X] [Fintype X] in
 @[simp]
 lemma getDualInOtherEquiv_symm : (l.getDualInOtherEquiv l2).symm = l2.getDualInOtherEquiv l := by
   rfl
@@ -179,7 +200,7 @@ def withUniqueDualCast {l1 l2 l1' l2' : IndexList X} (h : l1 = l1') (h2 : l2 = l
   invFun x := ⟨Fin.cast (by rw [h]) x.1, by subst h h2; exact x.prop⟩
   left_inv x := SetCoe.ext rfl
   right_inv x := SetCoe.ext rfl
-omit [IndexNotation X] [Fintype X]
+-- omit [IndexNotation X] [Fintype X]
 lemma getDualInOtherEquiv_cast_left (h : l = l3) :
     l.getDualInOtherEquiv l2 = ((withUniqueDualCastLeft l l2 l3 h).trans
     (l3.getDualInOtherEquiv l2)).trans (withUniqueDualCastRight l2 l l3 h).symm := by
@@ -204,7 +225,7 @@ lemma getDualInOtherEquiv_cast {l1 l2 l1' l2' : IndexList X} (h : l1 = l1') (h2 
 
 -/
 
-omit [DecidableEq X]
+-- omit [DecidableEq X]
 /-! TODO: Replace with a mathlib lemma. -/
 lemma option_not_lt (i j : Option (Fin l.length)) : i < j → i ≠ j → ¬ j < i := by
   match i, j with
@@ -219,7 +240,7 @@ lemma option_not_lt (i j : Option (Fin l.length)) : i < j → i ≠ j → ¬ j <
     simp_all
     change i < j at h
     change ¬ j < i
-    exact Fin.lt_asymm h
+    exact lt_asymm h
 
 /-! TODO: Replace with a mathlib lemma. -/
 lemma lt_option_of_not (i j : Option (Fin l.length)) : ¬ j < i → i ≠ j → i < j := by

@@ -73,7 +73,7 @@ lemma ud_us_neq_zero_iff_ub_neq_one (V : CKMMatrix) :
   refine Iff.intro (fun h h1 => ?_) (fun h => ?_)
   · rw [h1] at h2
     simp at h2
-    rw [add_eq_zero_iff_of_nonneg (sq_nonneg _) (sq_nonneg _)] at h2
+    rw [add_eq_zero_iff' (sq_nonneg _) (sq_nonneg _)] at h2
     simp_all
   · by_contra hn
     rw [not_or] at hn
@@ -109,7 +109,7 @@ lemma VAbsub_neq_zero_Vud_Vus_neq_zero {V : Quotient CKMMatrixSetoid}
   simpa [← Complex.sq_abs] using (normSq_Vud_plus_normSq_Vus_neq_zero_ℝ hV)
 
 lemma VAbsub_neq_zero_sqrt_Vud_Vus_neq_zero {V : Quotient CKMMatrixSetoid}
-    (hV : VAbs 0 2 V ≠ 1) : √(VudAbs V ^ 2 + VusAbs V ^ 2) ≠ 0 := by
+    (hV : VAbs 0 2 V ≠ 1) : (VudAbs V ^ 2 + VusAbs V ^ 2).sqrt ≠ 0 := by
   obtain ⟨V⟩ := V
   rw [Real.sqrt_ne_zero (Left.add_nonneg (sq_nonneg _) (sq_nonneg _))]
   change VubAbs ⟦V⟧ ≠ 1 at hV
@@ -186,6 +186,7 @@ lemma conj_Vtb_cross_product {V : CKMMatrix} {τ : ℝ}
   simp only [← exp_conj, _root_.map_mul, conj_ofReal, conj_I, mul_neg, Fin.isValue, neg_mul]
   field_simp
   ring_nf
+  left; trivial
 
 end crossProduct
 
@@ -194,7 +195,8 @@ lemma conj_Vtb_mul_Vud {V : CKMMatrix} {τ : ℝ}
     cexp (τ * I) * conj [V]tb * conj [V]ud =
     [V]cs * (normSq [V]ud + normSq [V]us) + [V]cb * conj [V]ub * [V]us := by
   rw [conj_Vtb_cross_product hτ]
-  simp [exp_neg]
+  simp [exp_neg, ← mul_assoc]
+  rw [mul_inv_cancel (exp_ne_zero _), one_mul]
   have h2 : ([V]cs * [V]ud - [V]us * [V]cd) * conj [V]ud = [V]cs
       * [V]ud * conj [V]ud - [V]us * ([V]cd * conj [V]ud) := by
     ring
@@ -208,7 +210,8 @@ lemma conj_Vtb_mul_Vus {V : CKMMatrix} {τ : ℝ}
     cexp (τ * I) * conj [V]tb * conj [V]us =
     - ([V]cd * (normSq [V]ud + normSq [V]us) + [V]cb * conj ([V]ub) * [V]ud) := by
   rw [conj_Vtb_cross_product hτ]
-  simp [exp_neg]
+  simp [exp_neg, ← mul_assoc]
+  rw [mul_inv_cancel (exp_ne_zero _), one_mul]
   have h2 : ([V]cs * [V]ud - [V]us * [V]cd) * conj [V]us = ([V]cs
       * conj [V]us) * [V]ud - [V]us * [V]cd * conj [V]us := by
     ring
@@ -290,15 +293,16 @@ lemma cb_eq_zero_of_ud_us_zero {V : CKMMatrix} (h : [V]ud = 0 ∧ [V]us = 0) :
   simp [h] at h1
   rw [add_assoc] at h1
   simp at h1
-  rw [add_eq_zero_iff_of_nonneg (sq_nonneg _) (sq_nonneg _)] at h1
+  rw [add_eq_zero_iff' (sq_nonneg _) (sq_nonneg _)] at h1
   simp at h1
   exact h1.1
 
 lemma cs_of_ud_us_zero {V : CKMMatrix} (ha : ¬ ([V]ud ≠ 0 ∨ [V]us ≠ 0)) :
-    VcsAbs ⟦V⟧ = √(1 - VcdAbs ⟦V⟧ ^ 2) := by
+    VcsAbs ⟦V⟧ = (1 - VcdAbs ⟦V⟧ ^ 2).sqrt := by
   have h1 := snd_row_normalized_abs V
   symm
-  rw [Real.sqrt_eq_iff_eq_sq]
+  rw [Real.sqrt_eq_iff_sq_eq]
+  symm
   · simp [not_or] at ha
     rw [cb_eq_zero_of_ud_us_zero ha] at h1
     simp at h1
@@ -325,7 +329,7 @@ lemma cb_tb_neq_zero_iff_ub_neq_one (V : CKMMatrix) :
     simp at h2
     have h2 : Complex.abs (V.1 1 2) ^ 2 + Complex.abs (V.1 2 2) ^ 2 = 0 := by
       linear_combination h2
-    rw [add_eq_zero_iff_of_nonneg (sq_nonneg _) (sq_nonneg _)] at h2
+    rw [add_eq_zero_iff' (sq_nonneg _) (sq_nonneg _)] at h2
     simp_all
   · by_contra hn
     rw [not_or] at hn

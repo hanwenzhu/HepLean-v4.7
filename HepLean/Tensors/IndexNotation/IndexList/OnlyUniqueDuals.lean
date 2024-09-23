@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 import HepLean.Tensors.IndexNotation.IndexList.CountId
 import HepLean.Tensors.IndexNotation.IndexList.Contraction
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Finset.Sort
 /-!
 
@@ -33,9 +33,9 @@ namespace OnlyUniqueDuals
 
 variable {l l2 l3 : IndexList X}
 
-omit [IndexNotation X] [Fintype X]
+-- omit [IndexNotation X] [Fintype X]
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma iff_unique_forall :
     l.OnlyUniqueDuals ↔
     ∀ (i : l.withDual) j, l.AreDualInSelf i j → j = l.getDual? i := by
@@ -51,7 +51,7 @@ lemma iff_unique_forall :
         true_and]
       exact And.intro ((mem_withDual_iff_isSome l i).mp hi) (fun j hj => h ⟨i, hi⟩ j hj)
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma iff_countId_leq_two :
     l.OnlyUniqueDuals ↔ ∀ i, l.countId (l.val.get i) ≤ 2 := by
   refine Iff.intro (fun h i => ?_) (fun h => ?_)
@@ -89,7 +89,7 @@ lemma inl (h : (l ++ l2).OnlyUniqueDuals) : l.OnlyUniqueDuals := by
   intro I
   have hI := h I
   rw [countId_append] at hI
-  exact Nat.le_of_add_right_le hI
+  exact (Nat.le_add_right _ _).trans hI
 
 lemma inr (h : (l ++ l2).OnlyUniqueDuals) : l2.OnlyUniqueDuals := by
   rw [iff_countId_leq_two'] at h ⊢
@@ -155,13 +155,13 @@ lemma contrIndexList_append (h1 : (l ++ l2).OnlyUniqueDuals) :
 
 end OnlyUniqueDuals
 
-omit [IndexNotation X] [Fintype X] in
+-- omit [IndexNotation X] [Fintype X] in
 lemma countId_of_OnlyUniqueDuals (h : l.OnlyUniqueDuals) (I : Index X) :
     l.countId I ≤ 2 := by
   rw [OnlyUniqueDuals.iff_countId_leq_two'] at h
   exact h I
 
-omit [IndexNotation X] [Fintype X] in
+-- omit [IndexNotation X] [Fintype X] in
 lemma countId_eq_two_ofcontrIndexList_left_of_OnlyUniqueDuals
     (h : (l ++ l2).OnlyUniqueDuals) (I : Index X) (h' : (l.contrIndexList ++ l2).countId I = 2) :
     (l ++ l2).countId I = 2 := by

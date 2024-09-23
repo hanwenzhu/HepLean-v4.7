@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import HepLean.AnomalyCancellation.Basic
-import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Fin
 /-!
@@ -33,6 +33,7 @@ def accGrav (n : ℕ) : ((PureU1Charges n).Charges →ₗ[ℚ] ℚ) where
   map_smul' a S := by
     simp [HSMul.hSMul, SMul.smul]
     rw [← Finset.mul_sum]
+    rfl
 
 /-- The symmetric trilinear form used to define the cubic anomaly. -/
 @[simps!]

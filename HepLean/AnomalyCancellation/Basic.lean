@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 import HepLean.Mathematics.LinearMaps
 import Mathlib.Algebra.Module.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.LinearAlgebra.FiniteDimensional
 /-!
 # Basic set up for anomaly cancellation conditions
 
@@ -83,6 +83,13 @@ structure LinSols (χ : ACCSystemLinear) where
 lemma LinSols.ext {χ : ACCSystemLinear} {S T : χ.LinSols} (h : S.val = T.val) : S = T := by
   cases' S
   simp_all only
+
+/-- `nsmul` is equal to any other module structure via a cast. -/
+lemma Nat.cast_smul_eq_nsmul (R) {M} [Semiring R] [AddCommMonoid M] [Module R M]
+    (n : ℕ) (b : M) : (n : R) • b = n • b := by
+  induction n with
+  | zero => rw [Nat.cast_zero, zero_smul, zero_nsmul]
+  | succ n ih => rw [Nat.cast_succ, add_smul, succ_nsmul, one_smul, ih]
 
 /-- An instance providing the operations and properties for `LinSols` to form an
   additive commutative monoid. -/
@@ -166,6 +173,18 @@ def linSolsInclQuadSolsZero (χ : ACCSystemQuad) (h : χ.numberQuadratic = 0) :
     χ.LinSols →[ℚ] χ.QuadSols where
   toFun S := ⟨S, by intro i; rw [h] at i; exact Fin.elim0 i⟩
   map_smul' _ _ := rfl
+
+-- def _root_.LinearMap.toMulActionHom' {R S} [Semiring R] [Semiring S] {σ : R →+* S}
+--     {M M₂} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] (self : M →ₛₗ[σ] M₂) :
+--     M →ₑ[⇑σ] M₂ where
+--   toFun := self.toFun
+--   map_smul' := self.map_smul'
+
+def _root_.LinearMap.toMulActionHom {R} [Semiring R]
+    {M M₂} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂] (self : M →ₗ[R] M₂) :
+    M →[R] M₂ where
+  toFun := self.toFun
+  map_smul' := self.map_smul'
 
 /-- The inclusion of quadratic solutions into all charges. -/
 def quadSolsIncl (χ : ACCSystemQuad) : χ.QuadSols →[ℚ] χ.Charges :=

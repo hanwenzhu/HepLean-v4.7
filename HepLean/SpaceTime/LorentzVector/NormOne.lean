@@ -127,7 +127,7 @@ lemma time_nonneg : 0 ≤ f.1.1.time := le_of_lt f.2
 
 lemma abs_time : |f.1.1.time| = f.1.1.time := abs_of_nonneg (time_nonneg f)
 
-lemma time_eq_sqrt : f.1.1.time = √(1 + ‖f.1.1.space‖ ^ 2) := by
+lemma time_eq_sqrt : f.1.1.time = (1 + ‖f.1.1.space‖ ^ 2).sqrt := by
   symm
   rw [Real.sqrt_eq_cases]
   apply Or.inl
@@ -210,7 +210,7 @@ noncomputable def timeVecNormOneFuture : FuturePointing d := ⟨⟨timeVec, by
 noncomputable def pathFromTime (u : FuturePointing d) : Path timeVecNormOneFuture u where
   toFun t := ⟨
     ⟨fun i => match i with
-      | Sum.inl 0 => √(1 + t ^ 2 * ‖u.1.1.space‖ ^ 2)
+      | Sum.inl 0 => (1 + t ^ 2 * ‖u.1.1.space‖ ^ 2).sqrt
       | Sum.inr i => t * u.1.1.space i,
     by
       rw [NormOneLorentzVector.mem_iff, minkowskiMetric.eq_time_minus_inner_prod]

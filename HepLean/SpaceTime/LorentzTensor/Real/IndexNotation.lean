@@ -50,8 +50,8 @@ open TensorStructure TensorIndex
 
 variable {d : ℕ}
 
-instance : IndexNotation (realLorentzTensor d).Color := instIndexNotationColorRealTensorColor
-instance : DecidableEq (realLorentzTensor d).Color := instDecidableEqColorRealTensorColor
+instance instIndexNotationColor : IndexNotation (realLorentzTensor d).Color := instIndexNotationColorRealTensorColor
+instance instDecidableEqColor : DecidableEq (realLorentzTensor d).Color := instDecidableEqColorRealTensorColor
 
 @[simp]
 lemma indexNotation_eq_color : @realLorentzTensor.instIndexNotationColor d =

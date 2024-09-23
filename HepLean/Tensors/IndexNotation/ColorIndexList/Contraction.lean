@@ -147,7 +147,7 @@ def contrEquiv : (l.withUniqueDualLT ⊕ l.withUniqueDualLT) ⊕ Fin l.contr.len
   (Equiv.sumCongr (Equiv.subtypeEquivRight (by
   rw [l.unique_duals]
   exact fun x => Eq.to_iff rfl))
-    (Fin.castOrderIso l.contrIndexList_length).toEquiv).trans <|
+    (Fin.castIso l.contrIndexList_length).toEquiv).trans <|
   l.dualEquiv
 
 lemma contrEquiv_inl_inl_isSome (i : l.withUniqueDualLT) :
@@ -169,7 +169,7 @@ lemma contrEquiv_inl_inl_eq (i : l.withUniqueDualLT) :
 lemma contrEquiv_colorMapIso :
     ColorMap.MapIso (Equiv.refl (Fin l.contr.length))
     (ColorMap.contr l.contrEquiv l.colorMap) l.contr.colorMap := by
-  simp only [ColorMap.MapIso, ColorMap.contr, Equiv.coe_refl, CompTriple.comp_eq]
+  simp only [ColorMap.MapIso, ColorMap.contr, Equiv.coe_refl]
   funext i
   simp only [contr, Function.comp_apply, contrIndexList_colorMap]
   rfl
@@ -187,8 +187,8 @@ lemma contrEquiv_on_withDual_empty (i : Fin l.contr.length) (h : l.withDual = �
     l.contrEquiv (Sum.inr i) = Fin.cast (by simp [h]) i := by
   simp only [contrEquiv, Equiv.trans_apply, Equiv.sumCongr_apply, Equiv.coe_refl, Sum.map_inr,
     id_eq]
-  change l.dualEquiv (Sum.inr ((Fin.castOrderIso _).toEquiv i)) = _
-  simp only [dualEquiv, withoutDualEquiv, RelIso.coe_fn_toEquiv, Fin.castOrderIso_apply,
+  change l.dualEquiv (Sum.inr ((Fin.castIso _).toEquiv i)) = _
+  simp only [dualEquiv, withoutDualEquiv, RelIso.coe_fn_toEquiv, Fin.castIso_apply,
     Equiv.trans_apply, Equiv.sumCongr_apply, Equiv.coe_refl, Sum.map_inr,
     Equiv.Finset.union_symm_inr, Finset.coe_orderIsoOfFin_apply, Equiv.subtypeUnivEquiv_apply]
   have h : l.withoutDual = Finset.univ := by

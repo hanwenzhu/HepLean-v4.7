@@ -44,7 +44,9 @@ lemma dedup_map_of_injective' {α : Type} [DecidableEq α] (f : α → ℕ)
         have hJ2 : J ∈ I :: l := List.mem_cons_of_mem I hJ
         exact hf I' hI'2 J hJ2
       · simp_all only [List.mem_cons, or_true, implies_true, true_implies, forall_eq_or_imp,
-        true_and, List.mem_map, not_exists, not_and, List.forall_mem_ne', not_false_eq_true]
+        true_and, List.mem_map, not_exists, not_and, List.forall_mem_ne, not_false_eq_true]
+        intro x hx hxI
+        exact h (hxI ▸ hx)
 
 /-! TODO: Replace with Mathlib lemma. -/
 lemma indexOf_map {α : Type} [DecidableEq α]
@@ -57,12 +59,12 @@ lemma indexOf_map {α : Type} [DecidableEq α]
       intro I' hI' J'
       exact hf I' (List.mem_cons_of_mem I hI') J'
     simp only [List.map_cons]
-    rw [← lawful_beq_subsingleton instBEqOfDecidableEq instBEqNat]
+    rw [← lawful_beq_subsingleton instBEq instBEqNat]
     by_cases h : I = n
     · rw [l.indexOf_cons_eq h, List.indexOf_cons_eq]
       exact congrArg f h
     · rw [l.indexOf_cons_ne h, List.indexOf_cons_ne]
-      · rw [lawful_beq_subsingleton instBEqOfDecidableEq instBEqNat, ih ih']
+      · rw [lawful_beq_subsingleton instBEq instBEqNat, ih ih']
       · exact (hf I (List.mem_cons_self I l) n).ne.mpr h
 
 lemma indexOf_map_fin {α : Type} {m : ℕ} [DecidableEq α]
@@ -95,12 +97,12 @@ lemma indexOf_map' {α : Type} [DecidableEq α]
       intro I' hI' J'
       exact hf I' (List.mem_cons_of_mem I hI') J'
     simp only [List.map_cons]
-    rw [← lawful_beq_subsingleton instBEqOfDecidableEq instBEqNat]
+    rw [← lawful_beq_subsingleton instBEq instBEqNat]
     by_cases h : I = g n
     · rw [l.indexOf_cons_eq h, List.indexOf_cons_eq]
       rw [h, ← hs]
     · rw [l.indexOf_cons_ne h, List.indexOf_cons_ne]
-      · rw [lawful_beq_subsingleton instBEqOfDecidableEq instBEqNat, ih ih']
+      · rw [lawful_beq_subsingleton instBEq instBEqNat, ih ih']
         intro I hI
         apply hg
         exact List.mem_cons_of_mem _ hI
@@ -117,16 +119,16 @@ lemma filter_dedup {α : Type} [DecidableEq α] (l : List α) (p : α → Prop) 
   | cons I l ih =>
     by_cases h : p I
     · by_cases hd : I ∈ l
-      · rw [List.filter_cons_of_pos (by simpa using h), List.dedup_cons_of_mem hd,
+      · rw [List.filter_cons_of_pos _ (by simpa using h), List.dedup_cons_of_mem hd,
           List.dedup_cons_of_mem, ih]
-        simp [hd, h]
-      · rw [List.filter_cons_of_pos (by simpa using h), List.dedup_cons_of_not_mem hd,
+        simp [hd, h, List.mem_filter]
+      · rw [List.filter_cons_of_pos _ (by simpa using h), List.dedup_cons_of_not_mem hd,
           List.dedup_cons_of_not_mem, ih, List.filter_cons_of_pos]
         · exact decide_eq_true h
-        · simp [hd]
+        · simp [hd, List.mem_filter]
     · by_cases hd : I ∈ l
-      · rw [List.filter_cons_of_neg (by simpa using h), List.dedup_cons_of_mem hd, ih]
-      · rw [List.filter_cons_of_neg (by simpa using h), List.dedup_cons_of_not_mem hd, ih]
+      · rw [List.filter_cons_of_neg _ (by simpa using h), List.dedup_cons_of_mem hd, ih]
+      · rw [List.filter_cons_of_neg _ (by simpa using h), List.dedup_cons_of_not_mem hd, ih]
         rw [List.filter_cons_of_neg]
         simpa using h
 
@@ -207,9 +209,9 @@ lemma findIdx?_on_finRange_eq_findIdx {n : ℕ} (p : Fin n → Prop) [DecidableP
 def idListFin : List (Fin l.length) := ((List.finRange l.length).filter
   (fun i => (List.finRange l.length).findIdx? (fun j => l.idMap i = l.idMap j) = i))
 
-omit [IndexNotation X] [Fintype X]
+-- omit [IndexNotation X] [Fintype X]
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma idListFin_getDualInOther? : l.idListFin =
     (List.finRange l.length).filter (fun i => l.getDualInOther? l i = i) := by
   rw [idListFin]
@@ -223,7 +225,7 @@ lemma idListFin_getDualInOther? : l.idListFin =
 /-- The list of ids keeping only the first appearance of each id. -/
 def idList : List ℕ := List.map l.idMap l.idListFin
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma idList_getDualInOther? : l.idList =
     List.map l.idMap ((List.finRange l.length).filter (fun i => l.getDualInOther? l i = i)) := by
   rw [idList, idListFin_getDualInOther?]
@@ -250,10 +252,10 @@ lemma idMap_mem_idList (i : Fin l.length) : l.idMap i ∈ l.idList := by
 @[simp]
 lemma idList_indexOf_mem {I J : Index X} (hI : I ∈ l.val) (hJ : J ∈ l.val) :
     l.idList.indexOf I.id = l.idList.indexOf J.id ↔ I.id = J.id := by
-  rw [← lawful_beq_subsingleton instBEqOfDecidableEq instBEqNat]
+  rw [← lawful_beq_subsingleton instBEq instBEqNat]
   exact List.indexOf_inj (l.mem_idList_of_mem hI) (l.mem_idList_of_mem hJ)
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma idList_indexOf_get (i : Fin l.length) :
     l.idList.indexOf (l.idMap i) = l.idListFin.indexOf ((l.getDualInOther? l i).get
       (getDualInOther?_self_isSome l i)) := by
@@ -294,7 +296,7 @@ namespace GetDualCast
 
 variable {l l2 l3 : IndexList X}
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma symm (h : GetDualCast l l2) : GetDualCast l2 l := by
   apply And.intro h.1.symm
   intro h'
@@ -305,12 +307,12 @@ lemma symm (h : GetDualCast l l2) : GetDualCast l2 l := by
   rw [h1]
   simp
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma getDual?_isSome_iff (h : GetDualCast l l2) (i : Fin l.length) :
     (l.getDual? i).isSome ↔ (l2.getDual? (Fin.cast h.1 i)).isSome := by
   simp [h.2 h.1]
 
-omit [DecidableEq X]
+-- omit [DecidableEq X]
 lemma getDual?_get (h : GetDualCast l l2) (i : Fin l.length) (h1 : (l.getDual? i).isSome) :
     (l.getDual? i).get h1 = Fin.cast h.1.symm ((l2.getDual? (Fin.cast h.1 i)).get
     ((getDual?_isSome_iff h i).mp h1)) := by
@@ -456,12 +458,20 @@ lemma getDualInOther?_get (h : GetDualCast l l2) (i : Fin l.length) :
     simp only [AreDualInOther]
     exact (idMap_eq_iff h i j).mp hj
 
+theorem _root_.List.ext_get_iff' {l₁ l₂ : List α} :
+    l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, List.get l₁ ⟨n, h₁⟩ = List.get l₂ ⟨n, h₂⟩ := by
+  constructor
+  · rintro rfl
+    exact ⟨rfl, fun _ _ _ ↦ rfl⟩
+  · intro ⟨h₁, h₂⟩
+    exact List.ext_get h₁ h₂
+
 lemma countId_cast (h : GetDualCast l l2) (i : Fin l.length) :
     l.countId (l.val.get i) = l2.countId (l2.val.get (Fin.cast h.1 i)) := by
   rw [countId_get, countId_get]
   simp only [add_left_inj]
   have h1 : List.finRange l2.length = List.map (Fin.cast h.1) (List.finRange l.length) := by
-    rw [List.ext_get_iff]
+    rw [List.ext_get_iff']
     simp [h.1]
   rw [h1]
   rw [List.countP_map]
@@ -474,7 +484,7 @@ lemma idListFin_cast (h : GetDualCast l l2) :
     List.map (Fin.cast h.1) l.idListFin = l2.idListFin := by
   rw [idListFin_getDualInOther?]
   have h1 : List.finRange l.length = List.map (Fin.cast h.1.symm) (List.finRange l2.length) := by
-    rw [List.ext_get_iff]
+    rw [List.ext_get_iff']
     simp [h.1]
   rw [h1]
   rw [List.filter_map]
@@ -514,7 +524,7 @@ end GetDualCast
 def normalize : IndexList X where
   val := List.ofFn (fun i => ⟨l.colorMap i, l.idList.indexOf (l.idMap i)⟩)
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma normalize_eq_map :
     l.normalize.val = List.map (fun I => ⟨I.toColor, l.idList.indexOf I.id⟩) l.val := by
   have hl : l.val = List.map l.val.get (List.finRange l.length) := by
@@ -523,27 +533,31 @@ lemma normalize_eq_map :
   simp only [normalize, List.map_map]
   exact List.ofFn_eq_map
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 @[simp]
 lemma normalize_length : l.normalize.length = l.length := by
   simp [normalize, idList, length]
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 @[simp]
 lemma normalize_val_length : l.normalize.val.length = l.val.length := by
   simp [normalize, idList, length]
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 @[simp]
 lemma normalize_colorMap : l.normalize.colorMap = l.colorMap ∘ Fin.cast l.normalize_length := by
   funext x
   simp [colorMap, normalize, Index.toColor]
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma colorMap_normalize :
     l.colorMap = l.normalize.colorMap ∘ Fin.cast l.normalize_length.symm := by
   funext x
   simp [colorMap, normalize, Index.toColor]
+
+@[simp] theorem _root_.List.getElem_map (f : α → β) {l} {n : Nat} {h : n < (List.map f l).length} :
+    (List.map f l)[n] = f (l[n]'(List.length_map l f ▸ h)) :=
+  List.get_map _
 
 @[simp]
 lemma normalize_countId (i : Fin l.normalize.length) :
@@ -605,11 +619,11 @@ lemma normalize_filter_countId_eq_one :
   rw [normalize_countId_mem]
   exact hI
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 @[simp]
 lemma normalize_idMap_apply (i : Fin l.normalize.length) :
     l.normalize.idMap i = l.idList.indexOf (l.val.get ⟨i, by simpa using i.2⟩).id := by
-  simp [idMap, normalize, Index.id]
+  simp [idMap, normalize, Index.id]; rfl
 
 @[simp]
 lemma normalize_getDualCast_self : GetDualCast l.normalize l := by
@@ -620,7 +634,7 @@ lemma normalize_getDualCast_self : GetDualCast l.normalize l := by
   refine Iff.intro (fun h' => ?_) (fun h' => ?_)
   · refine (List.indexOf_inj (idMap_mem_idList l (Fin.cast h i))
       (idMap_mem_idList l (Fin.cast h j))).mp ?_
-    rw [lawful_beq_subsingleton instBEqOfDecidableEq instBEqNat]
+    rw [lawful_beq_subsingleton instBEq instBEqNat]
     exact h'
   · exact congrFun (congrArg List.indexOf h') l.idList
 
@@ -681,12 +695,12 @@ lemma normalize_normalize : l.normalize.normalize = l.normalize := by
 
 -/
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma normalize_length_eq_of_eq_length (h : l.length = l2.length) :
     l.normalize.length = l2.normalize.length := by
   rw [normalize_length, normalize_length, h]
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma normalize_colorMap_eq_of_eq_colorMap (h : l.length = l2.length)
     (hc : l.colorMap = l2.colorMap ∘ Fin.cast h) :
     l.normalize.colorMap = l2.normalize.colorMap ∘
@@ -715,7 +729,7 @@ namespace Reindexing
 
 variable {l l2 l3 : IndexList X}
 
-omit [DecidableEq X] in
+-- omit [DecidableEq X] in
 lemma iff_getDualCast : Reindexing l l2 ↔ GetDualCast l l2
     ∧ ∀ (h : l.length = l2.length), l.colorMap = l2.colorMap ∘ Fin.cast h := by
   refine Iff.intro (fun h => ⟨⟨h.1, fun h' => (h.2 h').2⟩, fun h' => (h.2 h').1⟩) (fun h => ?_)

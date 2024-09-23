@@ -13,6 +13,20 @@ import HepLean.Meta.Informal
 This file defines the basic properties of the standard model in particle physics.
 
 -/
+
+namespace Matrix
+section specialUnitaryGroup
+variable (n) (α) [DecidableEq n] [Fintype n] [CommRing α] [StarRing α]
+/--`Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
+is 1. (This definition is only correct if 2 is invertible.)-/
+abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
+variable {n} {α}
+theorem mem_specialUnitaryGroup_iff :
+    A ∈ specialUnitaryGroup n α ↔ A ∈ unitaryGroup n α ∧ A.det = 1 :=
+  Iff.rfl
+end specialUnitaryGroup
+end Matrix
+
 /-! TODO: Redefine the gauge group as a quotient of SU(3) x SU(2) x U(1) by a subgroup of ℤ₆. -/
 universe v u
 namespace StandardModel

@@ -39,7 +39,7 @@ def genBoostAux₁ (u v : FuturePointing d) : LorentzVector d →ₗ[ℝ] Lorent
     simp only [map_add, LinearMap.add_apply]
     rw [mul_add, add_smul]
   map_smul' c x := by
-    simp only [LinearMapClass.map_smul, LinearMap.smul_apply, smul_eq_mul,
+    simp only [map_smul, LinearMap.smul_apply, smul_eq_mul,
       RingHom.id_apply]
     rw [← mul_assoc, mul_comm 2 c, mul_assoc, mul_smul]
 
@@ -129,7 +129,7 @@ lemma toMatrix_in_lorentzGroup (u v : FuturePointing d) : (toMatrix u v) ∈ Lor
   rw [toMatrix_mulVec, toMatrix_mulVec, genBoost, genBoostAux₁, genBoostAux₂]
   have h1 : (1 + (minkowskiMetric ↑u) ↑v.1.1) ≠ 0 := FuturePointing.one_add_metric_non_zero u v
   simp only [map_add, smul_add, neg_smul, LinearMap.add_apply, LinearMap.id_coe,
-    id_eq, LinearMap.coe_mk, AddHom.coe_mk, LinearMapClass.map_smul, map_neg, LinearMap.smul_apply,
+    id_eq, LinearMap.coe_mk, AddHom.coe_mk, map_smul, map_neg, LinearMap.smul_apply,
     smul_eq_mul, LinearMap.neg_apply]
   field_simp
   rw [u.1.2, v.1.2, minkowskiMetric.symm v.1.1 u, minkowskiMetric.symm u y,

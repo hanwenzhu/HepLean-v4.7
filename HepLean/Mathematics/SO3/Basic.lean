@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
 import Mathlib.Data.Complex.Exponential
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Analysis.InnerProductSpace.PiL2
@@ -32,7 +32,7 @@ instance SO3Group : Group SO3 where
   mul_one A := Subtype.eq (Matrix.mul_one A.1)
   inv A := ⟨A.1ᵀ, by simp only [det_transpose, A.2],
     by simp only [transpose_transpose, mul_eq_one_comm.mpr A.2.2]⟩
-  inv_mul_cancel A := Subtype.eq (mul_eq_one_comm.mpr A.2.2)
+  mul_left_inv A := Subtype.eq (mul_eq_one_comm.mpr A.2.2)
 
 /-- Notation for the group `SO3`. -/
 scoped[GroupTheory] notation (name := SO3_notation) "SO(3)" => SO3
@@ -124,7 +124,7 @@ lemma det_minus_id (A : SO(3)) : det (A.1 - 1) = 0 := by
       _ = det (- (A.1 - 1)) := by simp
       _ = (- 1) ^ 3 * det (A.1 - 1) := by simp only [det_neg, Fintype.card_fin, neg_mul, one_mul]
       _ = - det (A.1 - 1) := by simp [pow_three]
-  exact CharZero.eq_neg_self_iff.mp h1
+  exact (eq_neg_iff_add_eq_zero.trans add_self_eq_zero).mp h1
 
 @[simp]
 lemma det_id_minus (A : SO(3)) : det (1 - A.1) = 0 := by
@@ -179,7 +179,7 @@ lemma exists_stationary_vec (A : SO(3)) :
     rw [inner_smul_right, inner_smul_left, real_inner_self_eq_norm_sq v]
     field_simp
     ring
-  · rw [_root_.map_smul, End.mem_eigenspace_iff.mp hv.1]
+  · rw [SMulHomClass.map_smul, End.mem_eigenspace_iff.mp hv.1]
     simp
 
 lemma exists_basis_preserved (A : SO(3)) :

@@ -34,7 +34,7 @@ variable (l : IndexList X)
 /-- The number of indices in an index list. -/
 def length : ℕ := l.val.length
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 lemma ext (h : l.val = l2.val) : l = l2 := by
   cases l
   cases l2
@@ -43,12 +43,12 @@ lemma ext (h : l.val = l2.val) : l = l2 := by
 /-- The index list constructed by prepending an index to the list. -/
 def cons (i : Index X) : IndexList X := {val := i :: l.val}
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 @[simp]
 lemma cons_val (i : Index X) : (l.cons i).val = i :: l.val := by
   rfl
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 @[simp]
 lemma cons_length (i : Index X) : (l.cons i).length = l.length + 1 := by
   rfl
@@ -56,7 +56,7 @@ lemma cons_length (i : Index X) : (l.cons i).length = l.length + 1 := by
 /-- The tail of an index list. That is, the index list with the first index dropped. -/
 def tail : IndexList X := {val := l.val.tail}
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 @[simp]
 lemma tail_val : l.tail.val = l.val.tail := by
   rfl
@@ -64,13 +64,16 @@ lemma tail_val : l.tail.val = l.val.tail := by
 /-- The first index in a non-empty index list. -/
 def head (h : l ≠ {val := ∅}) : Index X := l.val.head (by cases' l; simpa using h)
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+@[simp] theorem _root_.List.head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by
+  cases x <;> simp at h ⊢
+
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 lemma head_cons_tail (h : l ≠ {val := ∅}) : l = (l.tail.cons (l.head h)) := by
   apply ext
   simp only [cons_val, tail_val]
   simp only [head, List.head_cons_tail]
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 lemma induction {P : IndexList X → Prop } (h_nil : P {val := ∅})
   (h_cons : ∀ (x : Index X) (xs : IndexList X), P xs → P (xs.cons x)) (l : IndexList X) : P l := by
   cases' l with val
@@ -83,7 +86,7 @@ lemma induction {P : IndexList X → Prop } (h_nil : P {val := ∅})
 def colorMap : Fin l.length → X :=
   fun i => (l.val.get i).toColor
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 lemma colorMap_cast {l1 l2 : IndexList X} (h : l1 = l2) :
     l1.colorMap = l2.colorMap ∘ Fin.cast (congrArg length h) := by
   subst h
@@ -93,7 +96,7 @@ lemma colorMap_cast {l1 l2 : IndexList X} (h : l1 = l2) :
 def idMap : Fin l.length → Nat :=
   fun i => (l.val.get i).id
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X]
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X]
 
 lemma idMap_cast {l1 l2 : IndexList X} (h : l1 = l2) (i : Fin l1.length) :
     l1.idMap i = l2.idMap (Fin.cast (by rw [h]) i) := by
@@ -122,6 +125,8 @@ lemma ext_colorMap_idMap {l l2 : IndexList X} (hl : l.length = l2.length)
 def toPosSet (l : IndexList X) : Set (Fin l.length × Index X) :=
   {(i, l.val.get i) | i : Fin l.length}
 
+theorem _root_.List.get_eq_getElem (l : List α) (i : Fin l.length) : l.get i = l[i.1]'i.2 := rfl
+
 /-- Equivalence between `toPosSet` and `Fin l.numIndices`. -/
 def toPosSetEquiv (l : IndexList X) : l.toPosSet ≃ Fin l.length where
   toFun := fun x => x.1.1
@@ -141,7 +146,7 @@ def toPosSetEquiv (l : IndexList X) : l.toPosSet ≃ Fin l.length where
     intro x
     rfl
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 lemma toPosSet_is_finite (l : IndexList X) : l.toPosSet.Finite :=
   Finite.intro l.toPosSetEquiv
 
@@ -161,7 +166,7 @@ def toPosFinset (l : IndexList X) : Finset (Fin l.length × Index X) :=
 def fromFinMap {n : ℕ} (f : Fin n → Index X) : IndexList X where
   val := (Fin.list n).map f
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 @[simp]
 lemma fromFinMap_numIndices {n : ℕ} (f : Fin n → Index X) :
     (fromFinMap f).length = n := by
@@ -181,11 +186,11 @@ variable (l l2 l3 : IndexList X)
 instance : HAppend (IndexList X) (IndexList X) (IndexList X) where
   hAppend := fun l l2 => {val := l.val ++ l2.val}
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 @[simp]
 lemma cons_append (i : Index X) : (l.cons i) ++ l2 = (l ++ l2).cons i := by
   rfl
-omit [IndexNotation X] [Fintype X] [DecidableEq X]
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X]
 @[simp]
 lemma append_length : (l ++ l2).length = l.length + l2.length := by
   simpa only [length] using List.length_append l.val l2.val
@@ -198,7 +203,7 @@ lemma append_assoc : l ++ l2 ++ l3 = l ++ (l2 ++ l3) := by
 /-- An equivalence between the sum of the types of indices of `l` an `l2` and the type
   of indices of the joined index list `l ++ l2`. -/
 def appendEquiv {l l2 : IndexList X} : Fin l.length ⊕ Fin l2.length ≃ Fin (l ++ l2).length :=
-  finSumFinEquiv.trans (Fin.castOrderIso (List.length_append _ _).symm).toEquiv
+  finSumFinEquiv.trans (Fin.castIso (List.length_append _ _).symm).toEquiv
 
 /-- The inclusion of the indices of `l` into the indices of `l ++ l2`. -/
 def appendInl : Fin l.length ↪ Fin (l ++ l2).length where
@@ -232,6 +237,21 @@ lemma appendInr_appendEquiv :
 lemma append_val {l l2 : IndexList X} : (l ++ l2).val = l.val ++ l2.val := by
   rfl
 
+theorem _root_.List.getElem_append_left (as bs : List α) (h : i < as.length) {h'} : (as ++ bs)[i] = as[i] := by
+  induction as generalizing i with
+  | nil => trivial
+  | cons a as ih =>
+    cases i with
+    | zero => rfl
+    | succ i => apply ih
+
+theorem _root_.List.getElem_append_right (as bs : List α) (h : ¬ i < as.length) {h' h''} : (as ++ bs)[i]'h' = bs[i - as.length]'h'' := by
+  induction as generalizing i with
+  | nil => trivial
+  | cons a as ih =>
+    cases i with (simp [get, Nat.succ_sub_succ]; simp_arith [Nat.succ_sub_succ] at h)
+    | succ i => apply ih; simp_arith [h]
+
 @[simp]
 lemma idMap_append_inl {l l2 : IndexList X} (i : Fin l.length) :
     (l ++ l2).idMap (appendEquiv (Sum.inl i)) = l.idMap i := by
@@ -244,7 +264,7 @@ lemma idMap_append_inl {l l2 : IndexList X} (i : Fin l.length) :
 lemma idMap_append_inr {l l2 : IndexList X} (i : Fin l2.length) :
     (l ++ l2).idMap (appendEquiv (Sum.inr i)) = l2.idMap i := by
   simp only [idMap, append_val, length, appendEquiv, Equiv.trans_apply, finSumFinEquiv_apply_right,
-    RelIso.coe_fn_toEquiv, Fin.castOrderIso_apply, List.get_eq_getElem, Fin.coe_cast,
+    RelIso.coe_fn_toEquiv, Fin.castIso_apply, List.get_eq_getElem, Fin.coe_cast,
     Fin.coe_natAdd]
   rw [List.getElem_append_right]
   · simp only [Nat.add_sub_cancel_left]
@@ -255,7 +275,7 @@ lemma idMap_append_inr {l l2 : IndexList X} (i : Fin l2.length) :
 lemma colorMap_append_inl {l l2 : IndexList X} (i : Fin l.length) :
     (l ++ l2).colorMap (appendEquiv (Sum.inl i)) = l.colorMap i := by
   simp only [colorMap, append_val, length, appendEquiv, Equiv.trans_apply,
-    finSumFinEquiv_apply_left, RelIso.coe_fn_toEquiv, Fin.castOrderIso_apply, List.get_eq_getElem,
+    finSumFinEquiv_apply_left, RelIso.coe_fn_toEquiv, Fin.castIso_apply, List.get_eq_getElem,
     Fin.coe_cast, Fin.coe_castAdd]
   rw [List.getElem_append_left]
 
@@ -269,7 +289,7 @@ lemma colorMap_append_inl' :
 lemma colorMap_append_inr {l l2 : IndexList X} (i : Fin l2.length) :
     (l ++ l2).colorMap (appendEquiv (Sum.inr i)) = l2.colorMap i := by
   simp only [colorMap, append_val, length, appendEquiv, Equiv.trans_apply,
-    finSumFinEquiv_apply_right, RelIso.coe_fn_toEquiv, Fin.castOrderIso_apply, List.get_eq_getElem,
+    finSumFinEquiv_apply_right, RelIso.coe_fn_toEquiv, Fin.castIso_apply, List.get_eq_getElem,
     Fin.coe_cast, Fin.coe_natAdd]
   rw [List.getElem_append_right]
   · simp only [Nat.add_sub_cancel_left]
@@ -332,7 +352,20 @@ lemma filter_sort_comm {n : ℕ} (s : Finset (Fin n)) (p : Fin n → Prop) [Deci
     exact List.sorted_mergeSort (fun i j => i ≤ j) (List.filter (fun b => decide (p b)) m)
   exact this s.val
 
-omit [IndexNotation X] [Fintype X] [DecidableEq X] in
+theorem _root_.List.filter_map (f : β → α) (l : List β) : List.filter p (List.map f l) = List.map f (List.filter (p ∘ f) l) := by
+  induction l with
+  | nil => rfl
+  | cons a l IH => by_cases h : p (f a) <;> simp [*]
+
+theorem _root_.List.filter_congr {p q : α → Bool} :
+    ∀ {l : List α}, (∀ x ∈ l, p x = q x) → List.filter p l = List.filter q l
+  | [], _ => rfl
+  | a :: l, h => by
+    rw [List.forall_mem_cons] at h; by_cases pa : p a
+    · simp [pa, h.1 ▸ pa, filter_congr h.2]
+    · simp [pa, h.1 ▸ pa, filter_congr h.2]
+
+-- omit [IndexNotation X] [Fintype X] [DecidableEq X] in
 lemma filter_id_eq_sort (i : Fin l.length) : l.val.filter (fun J => (l.val.get i).id = J.id) =
     List.map l.val.get (Finset.sort (fun i j => i ≤ j)
       (Finset.filter (fun j => l.idMap i = l.idMap j) Finset.univ)) := by

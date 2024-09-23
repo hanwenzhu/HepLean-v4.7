@@ -14,7 +14,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+-- import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.SetTheory.Cardinal.Basic
 /-!
 # Feynman diagrams
@@ -172,6 +173,12 @@ instance preimageEdgeDecidablePred {𝓔 𝓥 : Type} [DecidableEq 𝓔] (v : �
   | isTrue h => isTrue h
   | isFalse h => isFalse h
 
+instance _root_.Subtype.instDecidableEq {α : Type u} {p : α → Prop} [DecidableEq α] :
+    DecidableEq { x : α // p x } :=
+  fun ⟨a, h₁⟩ ⟨b, h₂⟩ =>
+    if h : a = b then isTrue (by subst h; exact rfl)
+    else isFalse (fun h' => Subtype.noConfusion h' (fun h' => absurd h' h))
+
 instance preimageVertexDecidable {𝓔 𝓥 : Type} (v : 𝓥)
     (F : Over (P.HalfEdgeLabel × 𝓔 × 𝓥)) [DecidableEq F.left] :
     DecidableEq ((P.preimageVertex v).obj F).left := Subtype.instDecidableEq
@@ -213,6 +220,10 @@ We will show that for `IsFinitePreFeynmanRule` the condition of been external is
 /-- A vertex is external if it has a single half-edge associated to it. -/
 def External {P : PreFeynmanRule} (v : P.VertexLabel) : Prop :=
   IsIsomorphic (P.vertexLabelMap v).left (Fin 1)
+
+theorem _root_.CategoryTheory.Iso.isIso_hom {C : Type u} [Category.{v, u} C]
+    {X : C} {Y : C} (e : X ≅ Y) : IsIso e.hom :=
+  ⟨e.inv, by simp, by simp⟩
 
 lemma external_iff_exists_bijection {P : PreFeynmanRule} (v : P.VertexLabel) :
     External v ↔ ∃ (κ : (P.vertexLabelMap v).left → Fin 1), Function.Bijective κ := by
@@ -425,19 +436,19 @@ instance {𝓔 𝓥 𝓱𝓔 : Type} [h1 : Fintype 𝓔] [h2 : DecidableEq 𝓔]
 instance {F : FeynmanDiagram P} [IsFiniteDiagram F] : Fintype F.𝓔 :=
   IsFiniteDiagram.𝓔Fintype
 
-instance {F : FeynmanDiagram P} [IsFiniteDiagram F] : DecidableEq F.𝓔 :=
+instance instDecidableEq𝓔OfIsFiniteDiagram {F : FeynmanDiagram P} [IsFiniteDiagram F] : DecidableEq F.𝓔 :=
   IsFiniteDiagram.𝓔DecidableEq
 
 instance {F : FeynmanDiagram P} [IsFiniteDiagram F] : Fintype F.𝓥 :=
   IsFiniteDiagram.𝓥Fintype
 
-instance {F : FeynmanDiagram P} [IsFiniteDiagram F] : DecidableEq F.𝓥 :=
+instance instDecidableEq𝓥OfIsFiniteDiagram {F : FeynmanDiagram P} [IsFiniteDiagram F] : DecidableEq F.𝓥 :=
   IsFiniteDiagram.𝓥DecidableEq
 
 instance {F : FeynmanDiagram P} [IsFiniteDiagram F] : Fintype F.𝓱𝓔 :=
   IsFiniteDiagram.𝓱𝓔Fintype
 
-instance {F : FeynmanDiagram P} [IsFiniteDiagram F] : DecidableEq F.𝓱𝓔 :=
+instance instDecidableEq𝓱𝓔OfIsFiniteDiagram {F : FeynmanDiagram P} [IsFiniteDiagram F] : DecidableEq F.𝓱𝓔 :=
   IsFiniteDiagram.𝓱𝓔DecidableEq
 
 instance {F : FeynmanDiagram P} [IsFiniteDiagram F] (i : F.𝓱𝓔) (j : F.𝓔) :
@@ -711,7 +722,7 @@ def AdjRelation : F.𝓥 → F.𝓥 → Prop := fun x y =>
   ∃ (a b : F.𝓱𝓔), ((F.𝓱𝓔To𝓔𝓥.hom a).2.1 = (F.𝓱𝓔To𝓔𝓥.hom b).2.1
   ∧ (F.𝓱𝓔To𝓔𝓥.hom a).2.2 = x ∧ (F.𝓱𝓔To𝓔𝓥.hom b).2.2 = y)
 
-instance [IsFiniteDiagram F] : DecidableRel F.AdjRelation := fun _ _ =>
+instance instDecidableRel𝓥AdjRelationOfIsFiniteDiagram [IsFiniteDiagram F] : DecidableRel F.AdjRelation := fun _ _ =>
   @And.decidable _ _ _ $
   @Fintype.decidableExistsFintype _ _ (fun _ => @Fintype.decidableExistsFintype _ _ (
   fun _ => @And.decidable _ _ (instDecidableEq𝓔OfIsFiniteDiagram _ _) $
@@ -738,7 +749,7 @@ instance [IsFiniteDiagram F] :
   Decidable (F.toSimpleGraph.Preconnected ∧ Nonempty F.𝓥) :=
   @And.decidable _ _ _ $ decidable_of_iff _ Finset.univ_nonempty_iff
 
-instance [IsFiniteDiagram F] : Decidable F.toSimpleGraph.Connected :=
+instance instDecidableConnected𝓥ToSimpleGraphOfIsFiniteDiagram [IsFiniteDiagram F] : Decidable F.toSimpleGraph.Connected :=
   decidable_of_iff _ (SimpleGraph.connected_iff F.toSimpleGraph).symm
 
 /-- A Feynman diagram is connected if its simple graph is connected. -/

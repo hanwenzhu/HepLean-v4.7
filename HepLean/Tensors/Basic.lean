@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import Mathlib.LinearAlgebra.PiTensorProduct
+import Mathlib.Logic.Equiv.Fintype
 /-!
 
 # Structure of Tensors
@@ -53,7 +54,7 @@ def colorRel (μ ν : 𝓒.Color) : Prop := μ = ν ∨ μ = 𝓒.τ ν
 
 instance : Decidable (colorRel 𝓒 μ ν) :=
   Or.decidable
-omit [Fintype 𝓒.Color] [DecidableEq 𝓒.Color]
+-- omit [Fintype 𝓒.Color] [DecidableEq 𝓒.Color]
 /-- An equivalence relation on colors which is true if the two colors are equal or are duals. -/
 lemma colorRel_equivalence : Equivalence 𝓒.colorRel where
   refl := by
@@ -94,7 +95,7 @@ instance (μ ν : 𝓒.Color) : Decidable (μ ≈ ν) :=
   Or.decidable
 
 instance : DecidableEq (Quotient 𝓒.colorSetoid) :=
-  instDecidableEqQuotientOfDecidableEquiv
+  inferInstance
 
 /-- The types of maps from an `X` to `𝓒.Color`. -/
 def ColorMap (X : Type) := X → 𝓒.Color
@@ -121,8 +122,8 @@ namespace MapIso
 variable {e : X ≃ Y} {e' : Y ≃ Z} {cX : ColorMap 𝓒 X} {cY : ColorMap 𝓒 Y} {cZ : ColorMap 𝓒 Z}
 variable {cX' : ColorMap 𝓒 X'} {cY' : ColorMap 𝓒 Y'}
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y][Fintype Z]
-  [DecidableEq Z] [Fintype 𝓒.Color] [DecidableEq 𝓒.Color]
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y][Fintype Z]
+--   [DecidableEq Z] [Fintype 𝓒.Color] [DecidableEq 𝓒.Color]
 lemma symm (h : cX.MapIso e cY) : cY.MapIso e.symm cX := by
   rw [MapIso] at h
   exact (Equiv.eq_comp_symm e cY cX).mpr h.symm
@@ -130,15 +131,15 @@ lemma symm (h : cX.MapIso e cY) : cY.MapIso e.symm cX := by
 lemma symm' : cX.MapIso e cY ↔ cY.MapIso e.symm cX := by
   refine ⟨symm, symm⟩
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] [Fintype Z] [DecidableEq Z]
-  [Fintype 𝓒.Color] [DecidableEq 𝓒.Color]
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] [Fintype Z] [DecidableEq Z]
+--   [Fintype 𝓒.Color] [DecidableEq 𝓒.Color]
 lemma trans (h : cX.MapIso e cY) (h' : cY.MapIso e' cZ) :
     cX.MapIso (e.trans e') cZ:= by
   funext a
   subst h h'
   rfl
 
-omit [Fintype Y'] [DecidableEq Y']
+-- omit [Fintype Y'] [DecidableEq Y']
 
 lemma sum {eX : X ≃ X'} {eY : Y ≃ Y'} (hX : cX.MapIso eX cX') (hY : cY.MapIso eY cY') :
     (cX.sum cY).MapIso (eX.sumCongr eY) (cX'.sum cY') := by
@@ -254,9 +255,9 @@ instance : Module R (𝓣.ColorModule μ) := 𝓣.colorModule_module μ
 def Tensor (c : 𝓣.ColorMap X) : Type := ⨂[R] x, 𝓣.ColorModule (c x)
 
 instance : AddCommMonoid (𝓣.Tensor cX) :=
-  PiTensorProduct.instAddCommMonoid fun i => 𝓣.ColorModule (cX i)
+  PiTensorProduct.instAddCommMonoidPiTensorProduct fun i => 𝓣.ColorModule (cX i)
 
-instance : Module R (𝓣.Tensor cX) := PiTensorProduct.instModule
+instance : Module R (𝓣.Tensor cX) := PiTensorProduct.instModulePiTensorProductToSemiringInstAddCommMonoidPiTensorProduct
 
 /-!
 
@@ -281,7 +282,7 @@ def colorModuleCast (h : μ = ν) : 𝓣.ColorModule μ ≃ₗ[R] 𝓣.ColorModu
   left_inv x := Equiv.symm_apply_apply (Equiv.cast (congrArg 𝓣.ColorModule h)) x
   right_inv x := Equiv.apply_symm_apply (Equiv.cast (congrArg 𝓣.ColorModule h)) x
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
 lemma tensorProd_piTensorProd_ext {M : Type} [AddCommMonoid M] [Module R M]
     {f g : 𝓣.Tensor cX ⊗[R] 𝓣.Tensor cY →ₗ[R] M}
     (h : ∀ p q, f (PiTensorProduct.tprod R p ⊗ₜ[R] PiTensorProduct.tprod R q)
@@ -298,9 +299,9 @@ lemma tensorProd_piTensorProd_ext {M : Type} [AddCommMonoid M] [Module R M]
       simp only [PiTensorProduct.tprodCoeff_eq_smul_tprod] at hx hy
       simp [map_add, tmul_add, hx, hy])
   intro ry fy
-  simp only [PiTensorProduct.tprodCoeff_eq_smul_tprod, tmul_smul, LinearMapClass.map_smul]
+  simp only [PiTensorProduct.tprodCoeff_eq_smul_tprod, tmul_smul, map_smul]
   apply congrArg
-  simp only [smul_tmul, tmul_smul, LinearMapClass.map_smul]
+  simp only [smul_tmul, tmul_smul, map_smul]
   exact congrArg (HSMul.hSMul rx) (h fx fy)
 
 /-!
@@ -315,13 +316,13 @@ def mapIso {c : 𝓣.ColorMap X} {d : 𝓣.ColorMap Y} (e : X ≃ Y) (h : c.MapI
   (PiTensorProduct.reindex R _ e) ≪≫ₗ
   (PiTensorProduct.congr (fun y => 𝓣.colorModuleCast (by rw [h]; simp)))
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
 lemma mapIso_ext {c : 𝓣.ColorMap X} {d : 𝓣.ColorMap Y} (e e' : X ≃ Y) (h : c.MapIso e d)
     (h' : c.MapIso e' d) (he : e = e') : 𝓣.mapIso e h = 𝓣.mapIso e' h' := by
   simp [he]
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] [Fintype Z]
-  [DecidableEq Z] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] [Fintype Z]
+--   [DecidableEq Z] in
 @[simp]
 lemma mapIso_trans (e : X ≃ Y) (e' : Y ≃ Z) (h : cX.MapIso e cY) (h' : cY.MapIso e' cZ) :
     (𝓣.mapIso e h ≪≫ₗ 𝓣.mapIso e' h') = 𝓣.mapIso (e.trans e') (h.trans h') := by
@@ -340,16 +341,16 @@ lemma mapIso_trans (e : X ≃ Y) (e' : Y ≃ Z) (h : cX.MapIso e cY) (h' : cY.Ma
     PiTensorProduct.congr_tprod, PiTensorProduct.reindex_tprod, PiTensorProduct.congr]
   simp [colorModuleCast]
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] [Fintype Z]
-  [DecidableEq Z] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] [Fintype Z]
+--   [DecidableEq Z] in
 @[simp]
 lemma mapIso_mapIso (e : X ≃ Y) (e' : Y ≃ Z) (h : cX.MapIso e cY) (h' : cY.MapIso e' cZ)
     (T : 𝓣.Tensor cX) :
     (𝓣.mapIso e' h') (𝓣.mapIso e h T) = 𝓣.mapIso (e.trans e') (h.trans h') T := by
   rw [← LinearEquiv.trans_apply, mapIso_trans]
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] [Fintype Z]
-  [DecidableEq Z] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] [Fintype Z]
+--   [DecidableEq Z] in
 @[simp]
 lemma mapIso_symm (e : X ≃ Y) (h : cX.MapIso e cY) :
     (𝓣.mapIso e h).symm = 𝓣.mapIso e.symm (h.symm) := by
@@ -375,8 +376,8 @@ lemma mapIso_symm (e : X ≃ Y) (h : cX.MapIso e cY) :
   apply cast_eq_iff_heq.mpr
   rw [Equiv.apply_symm_apply]
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] [Fintype Z]
-  [DecidableEq Z] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] [Fintype Z]
+--   [DecidableEq Z] in
 @[simp]
 lemma mapIso_refl : 𝓣.mapIso (Equiv.refl X) (rfl : cX = cX) = LinearEquiv.refl R _ := by
   refine LinearEquiv.toLinearMap_inj.mp ?_
@@ -391,7 +392,7 @@ lemma mapIso_refl : 𝓣.mapIso (Equiv.refl X) (rfl : cX = cX) = LinearEquiv.ref
   rw [PiTensorProduct.congr_tprod]
   rfl
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
 @[simp]
 lemma mapIso_tprod {c : 𝓣.ColorMap X} {d : 𝓣.ColorMap Y} (e : X ≃ Y) (h : c.MapIso e d)
     (f : (i : X) → 𝓣.ColorModule (c i)) : (𝓣.mapIso e h) (PiTensorProduct.tprod R f) =
@@ -422,7 +423,7 @@ def elimPureTensor (p : 𝓣.PureTensor cX) (q : 𝓣.PureTensor cY) : 𝓣.Pure
     | Sum.inl x => p x
     | Sum.inr x => q x
 
-omit [Fintype X] [Fintype Y] in
+-- omit [Fintype X] [Fintype Y] in
 @[simp]
 lemma elimPureTensor_update_right (p : 𝓣.PureTensor cX) (q : 𝓣.PureTensor cY)
     (y : Y) (r : 𝓣.ColorModule (cY y)) : 𝓣.elimPureTensor p (Function.update q y r) =
@@ -439,7 +440,7 @@ lemma elimPureTensor_update_right (p : 𝓣.PureTensor cX) (q : 𝓣.PureTensor 
       simp_all only
     · rfl
 
-omit [Fintype X] [Fintype Y] in
+-- omit [Fintype X] [Fintype Y] in
 @[simp]
 lemma elimPureTensor_update_left (p : 𝓣.PureTensor cX) (q : 𝓣.PureTensor cY)
     (x : X) (r : 𝓣.ColorModule (cX x)) : 𝓣.elimPureTensor (Function.update p x r) q =
@@ -464,7 +465,7 @@ def inlPureTensor (p : 𝓣.PureTensor (Sum.elim cX cY)) : 𝓣.PureTensor cX :=
   `𝓣.PureTensor cY`. -/
 def inrPureTensor (p : 𝓣.PureTensor (Sum.elim cX cY)) : 𝓣.PureTensor cY := fun y => p (Sum.inr y)
 
-omit [Fintype X] [Fintype Y] [DecidableEq Y] in
+-- omit [Fintype X] [Fintype Y] [DecidableEq Y] in
 @[simp]
 lemma inlPureTensor_update_left [DecidableEq (X ⊕ Y)] (f : 𝓣.PureTensor (Sum.elim cX cY)) (x : X)
     (v1 : 𝓣.ColorModule (Sum.elim cX cY (Sum.inl x))) :
@@ -478,7 +479,7 @@ lemma inlPureTensor_update_left [DecidableEq (X ⊕ Y)] (f : 𝓣.PureTensor (Su
     rfl
   · rfl
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
 @[simp]
 lemma inrPureTensor_update_left [DecidableEq (X ⊕ Y)] (f : 𝓣.PureTensor (Sum.elim cX cY)) (x : X)
     (v1 : 𝓣.ColorModule (Sum.elim cX cY (Sum.inl x))) :
@@ -486,7 +487,7 @@ lemma inrPureTensor_update_left [DecidableEq (X ⊕ Y)] (f : 𝓣.PureTensor (Su
   funext x
   simp [inrPureTensor, Function.update]
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] in
 @[simp]
 lemma inrPureTensor_update_right [DecidableEq (X ⊕ Y)] (f : 𝓣.PureTensor (Sum.elim cX cY)) (y : Y)
     (v1 : 𝓣.ColorModule (Sum.elim cX cY (Sum.inr y))) :
@@ -500,7 +501,7 @@ lemma inrPureTensor_update_right [DecidableEq (X ⊕ Y)] (f : 𝓣.PureTensor (S
     rfl
   · rfl
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
 @[simp]
 lemma inlPureTensor_update_right [DecidableEq (X ⊕ Y)] (f : 𝓣.PureTensor (Sum.elim cX cY)) (y : Y)
     (v1 : 𝓣.ColorModule (Sum.elim cX cY (Sum.inr y))) :
@@ -596,7 +597,7 @@ def tensoratorEquiv (c : X → 𝓣.Color) (d : Y → 𝓣.Color) :
     simp only [elimPureTensorMulLin, MultilinearMap.coe_mk, PiTensorProduct.lift.tprod]
     rfl)
 
-omit [Fintype X] [Fintype Y] in
+-- omit [Fintype X] [Fintype Y] in
 @[simp]
 lemma tensoratorEquiv_tmul_tprod (p : 𝓣.PureTensor cX) (q : 𝓣.PureTensor cY) :
     (𝓣.tensoratorEquiv cX cY) ((PiTensorProduct.tprod R) p ⊗ₜ[R] (PiTensorProduct.tprod R) q) =
@@ -605,7 +606,7 @@ lemma tensoratorEquiv_tmul_tprod (p : 𝓣.PureTensor cX) (q : 𝓣.PureTensor c
     lift.tmul, LinearMap.coe_mk, AddHom.coe_mk, PiTensorProduct.lift.tprod]
   exact PiTensorProduct.lift.tprod q
 
-omit [Fintype X] [Fintype Y] in
+-- omit [Fintype X] [Fintype Y] in
 @[simp]
 lemma tensoratorEquiv_symm_tprod (f : 𝓣.PureTensor (Sum.elim cX cY)) :
     (𝓣.tensoratorEquiv cX cY).symm ((PiTensorProduct.tprod R) f) =
@@ -615,7 +616,7 @@ lemma tensoratorEquiv_symm_tprod (f : 𝓣.PureTensor (Sum.elim cX cY)) :
   change (PiTensorProduct.lift 𝓣.domCoprod) ((PiTensorProduct.tprod R) f) = _
   simp [domCoprod]
 
-omit [Fintype X] [Fintype Y] [Fintype W] [Fintype Z] in
+-- omit [Fintype X] [Fintype Y] [Fintype W] [Fintype Z] in
 @[simp]
 lemma tensoratorEquiv_mapIso (e' : Z ≃ Y) (e'' : W ≃ X)
     (h' : cZ.MapIso e' cY) (h'' : cW.MapIso e'' cX) :
@@ -634,7 +635,7 @@ lemma tensoratorEquiv_mapIso (e' : Z ≃ Y) (e'' : W ≃ X)
   | Sum.inl x => rfl
   | Sum.inr x => rfl
 
-omit [Fintype X] [Fintype Y] [Fintype W] [Fintype Z] in
+-- omit [Fintype X] [Fintype Y] [Fintype W] [Fintype Z] in
 @[simp]
 lemma tensoratorEquiv_mapIso_apply (e' : Z ≃ Y) (e'' : W ≃ X)
     (h' : cZ.MapIso e' cY) (h'' : cW.MapIso e'' cX)
@@ -648,7 +649,7 @@ lemma tensoratorEquiv_mapIso_apply (e' : Z ≃ Y) (e'' : W ≃ X)
   · rw [tensoratorEquiv_mapIso]
     rfl
 
-omit [Fintype X] [Fintype Y] [Fintype W] [Fintype Z] in
+-- omit [Fintype X] [Fintype Y] [Fintype W] [Fintype Z] in
 lemma tensoratorEquiv_mapIso_tmul (e' : Z ≃ Y) (e'' : W ≃ X)
     (h' : cZ.MapIso e' cY) (h'' : cW.MapIso e'' cX)
     (x : 𝓣.Tensor cW) (y : 𝓣.Tensor cZ) :
@@ -719,7 +720,7 @@ lemma contrDual_symm_contrRightAux_apply_tmul (h : ν = η)
 def isEmptyEquiv [IsEmpty X] : 𝓣.Tensor cX ≃ₗ[R] R :=
   PiTensorProduct.isEmptyEquiv X
 
-omit [Fintype X] [DecidableEq X] in
+-- omit [Fintype X] [DecidableEq X] in
 @[simp]
 lemma isEmptyEquiv_tprod [IsEmpty X] (f : 𝓣.PureTensor cX) :
     𝓣.isEmptyEquiv (PiTensorProduct.tprod R f) = 1 := by
@@ -751,7 +752,7 @@ def decompEmbedColorLeft (c : X → 𝓣.Color) (f : Y ↪ X) :
 def decompEmbedColorRight (c : X → 𝓣.Color) (f : Y ↪ X) : Y → 𝓣.Color :=
   (c ∘ (decompEmbedSet f).symm) ∘ Sum.inr
 
-omit [DecidableEq Y] in
+-- omit [DecidableEq Y] in
 lemma decompEmbed_cond (c : X → 𝓣.Color) (f : Y ↪ X) : c =
     (Sum.elim (𝓣.decompEmbedColorLeft c f) (𝓣.decompEmbedColorRight c f)) ∘ decompEmbedSet f := by
   simpa [decompEmbedColorLeft, decompEmbedColorRight] using (Equiv.comp_symm_eq _ _ _).mp rfl

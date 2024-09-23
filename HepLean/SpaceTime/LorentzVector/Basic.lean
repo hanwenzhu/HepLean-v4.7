@@ -21,6 +21,8 @@ corresponds to contravariant Lorentz tensors.
 
 -/
 
+open BigOperators
+
 /- The number of space dimensions . -/
 variable (d : ℕ)
 
@@ -31,7 +33,7 @@ def LorentzVector : Type := (Fin 1 ⊕ Fin d) → ℝ
 instance : AddCommMonoid (LorentzVector d) := Pi.addCommMonoid
 
 /-- An instance of a module on `LorentzVector`. -/
-noncomputable instance : Module ℝ (LorentzVector d) := Pi.module _ _ _
+noncomputable instance instModuleRealLorentzVector : Module ℝ (LorentzVector d) := Pi.module _ _ _
 
 instance : AddCommGroup (LorentzVector d) := Pi.addCommGroup
 
@@ -66,9 +68,7 @@ noncomputable def stdBasis : Basis (Fin 1 ⊕ Fin (d)) ℝ (LorentzVector d) := 
 scoped[LorentzVector] notation "e" => stdBasis
 
 lemma stdBasis_apply (μ ν : Fin 1 ⊕ Fin d) : e μ ν = if μ = ν then 1 else 0 := by
-  erw [stdBasis, Pi.basisFun_apply, Pi.single_apply]
-  refine Eq.symm (ite_congr ?h₁ (congrFun rfl) (congrFun rfl))
-  exact Eq.propIntro (fun a => id (Eq.symm a)) fun a => id (Eq.symm a)
+  erw [stdBasis, Pi.basisFun_apply, LinearMap.stdBasis_apply']
 
 lemma decomp_stdBasis (v : LorentzVector d) : ∑ i, v i • e i = v := by
   funext ν
@@ -76,7 +76,7 @@ lemma decomp_stdBasis (v : LorentzVector d) : ∑ i, v i • e i = v := by
   rw [Finset.sum_eq_single_of_mem ν]
   · simp only [HSMul.hSMul, SMul.smul, stdBasis]
     erw [Pi.basisFun_apply]
-    simp only [Pi.single_eq_same, mul_one]
+    simp only [LinearMap.stdBasis_apply', ↓reduceIte, mul_one]
   · exact Finset.mem_univ ν
   · intros b _ hbi
     simp only [HSMul.hSMul, SMul.smul, stdBasis, mul_eq_zero]

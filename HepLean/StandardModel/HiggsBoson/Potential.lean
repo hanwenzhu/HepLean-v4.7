@@ -111,7 +111,7 @@ lemma toFun_eq_zero_iff (h : P.𝓵 ≠ 0) (φ : HiggsField) (x : SpaceTime) :
     · simp [toFun, hD]
     · simp only [toFun, neg_mul]
       rw [hD]
-      field_simp
+      field_simp [mul_comm]
 
 /-!
 
@@ -141,7 +141,7 @@ lemma quadDiscrim_eq_zero_iff (h : P.𝓵 ≠ 0) (φ : HiggsField) (x : SpaceTim
   refine Iff.intro (fun hD => ?_) (fun hV => ?_)
   · field_simp
     linear_combination hD
-  · field_simp [hV]
+  · field_simp [hV, mul_comm]
 
 lemma quadDiscrim_eq_zero_iff_normSq (h : P.𝓵 ≠ 0) (φ : HiggsField) (x : SpaceTime) :
     P.quadDiscrim φ x = 0 ↔ ‖φ‖_H ^ 2 x = P.μ2 / (2 * P.𝓵) := by
@@ -162,7 +162,7 @@ lemma neg_𝓵_quadDiscrim_zero_bound (h : P.𝓵 < 0) (φ : HiggsField) (x : Sp
   ring_nf at h1
   rw [← neg_le_iff_add_nonneg',
     show P.𝓵 * P.toFun φ x * 4 = (- 4 * P.𝓵) * (- P.toFun φ x) by ring] at h1
-  have h2 := le_neg_of_le_neg <| (div_le_iff₀' (by linarith : 0 < - 4 * P.𝓵)).mpr h1
+  have h2 := le_neg_of_le_neg <| (div_le_iff' (by linarith : 0 < - 4 * P.𝓵)).mpr h1
   ring_nf at h2 ⊢
   exact h2
 
@@ -209,7 +209,7 @@ lemma neg_𝓵_sol_exists_iff (h𝓵 : P.𝓵 < 0) (c : ℝ) : (∃ φ x, P.toFu
       refine Or.inr (And.intro ?_ ?_)
       · rw [sub_nonpos]
         by_cases hμ : P.μ2 < 0
-        · have h1 : 0 ≤ √(P.μ2 ^ 2 + 4 * P.𝓵 * c) := Real.sqrt_nonneg (P.μ2 ^ 2 + 4 * P.𝓵 * c)
+        · have h1 : 0 ≤ (P.μ2 ^ 2 + 4 * P.𝓵 * c).sqrt := Real.sqrt_nonneg (P.μ2 ^ 2 + 4 * P.𝓵 * c)
           linarith
         · refine Real.le_sqrt_of_sq_le ?_
           rw [le_add_iff_nonneg_right]

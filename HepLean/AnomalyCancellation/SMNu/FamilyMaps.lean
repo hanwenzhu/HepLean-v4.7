@@ -71,7 +71,7 @@ def speciesEmbed (m n : ℕ) :
     funext i
     simp [HSMul.hSMul]
     by_cases hi : i.val < m
-    · erw [dif_pos hi, dif_pos hi]
+    · erw [dif_pos hi, dif_pos hi]; rfl
     · erw [dif_neg hi, dif_neg hi]
       exact Eq.symm (Rat.mul_zero a)
 

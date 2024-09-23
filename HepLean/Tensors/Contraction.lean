@@ -62,32 +62,32 @@ namespace ContrAll
 variable {e : X ≃ Y} {e' : Y ≃ Z} {cX : ColorMap 𝓒 X} {cY : ColorMap 𝓒 Y} {cZ : ColorMap 𝓒 Z}
 variable {cX' : ColorMap 𝓒 X'} {cY' : ColorMap 𝓒 Y'}
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
-  [Fintype 𝓒.Color] [DecidableEq 𝓒.Color] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
+--   [Fintype 𝓒.Color] [DecidableEq 𝓒.Color] in
 lemma toMapIso (h : cX.ContrAll e cY) : cX.MapIso e cY.dual := by
   subst h
   rfl
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
-  [Fintype 𝓒.Color] [DecidableEq 𝓒.Color] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
+--   [Fintype 𝓒.Color] [DecidableEq 𝓒.Color] in
 lemma symm (h : cX.ContrAll e cY) : cY.ContrAll e.symm cX := by
   subst h
   funext x
   simp only [Function.comp_apply, Equiv.apply_symm_apply]
   exact (𝓒.τ_involutive (cY x)).symm
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
-  [Fintype 𝓒.Color] [DecidableEq 𝓒.Color] [Fintype Z]
-  [DecidableEq Z] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
+--   [Fintype 𝓒.Color] [DecidableEq 𝓒.Color] [Fintype Z]
+--   [DecidableEq Z] in
 lemma trans_mapIso {e : X ≃ Y} {e' : Z ≃ Y}
     (h : cX.ContrAll e cY) (h' : cZ.MapIso e' cY) : cX.ContrAll (e.trans e'.symm) cZ := by
   subst h h'
   funext x
   simp only [Function.comp_apply, Equiv.coe_trans, Equiv.apply_symm_apply]
 
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
-  [Fintype 𝓒.Color] [DecidableEq 𝓒.Color] [Fintype Z]
-  [DecidableEq Z] in
+-- omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
+--   [Fintype 𝓒.Color] [DecidableEq 𝓒.Color] [Fintype Z]
+--   [DecidableEq Z] in
 lemma mapIso_trans {e : X ≃ Y} {e' : Z ≃ X}
     (h : cX.ContrAll e cY) (h' : cZ.MapIso e' cX) : cZ.ContrAll (e'.trans e) cY := by
   subst h h'
@@ -121,9 +121,9 @@ variable {e : (C ⊕ C) ⊕ P ≃ X} {e' : Y ≃ Z} {cX : ColorMap 𝓒 X} {cY :
 
 variable {cX' : ColorMap 𝓒 X'} {cY' : ColorMap 𝓒 Y'}
 
-omit [Fintype X] [DecidableEq X] [Fintype C]
-  [DecidableEq C] [Fintype P] [DecidableEq P]
-  [Fintype 𝓒.Color] [DecidableEq 𝓒.Color] in
+-- omit [Fintype X] [DecidableEq X] [Fintype C]
+--   [DecidableEq C] [Fintype P] [DecidableEq P]
+--   [Fintype 𝓒.Color] [DecidableEq 𝓒.Color] in
 lemma to_contrAll (h : cX.ContrCond e) :
     (cX.contrLeft e).ContrAll (Equiv.refl _) (cX.contrRight e) := h
 
@@ -172,7 +172,7 @@ def pairProd : 𝓣.Tensor cX ⊗[R] 𝓣.Tensor cX2 →ₗ[R]
     PiTensorProduct.map₂ (fun x =>
       TensorProduct.mk R (𝓣.ColorModule (cX x)) (𝓣.ColorModule (cX2 x))))
 
-omit [Fintype X] [DecidableEq X] in
+-- omit [Fintype X] [DecidableEq X] in
 lemma pairProd_tmul_tprod_tprod (fx : (i : X) → 𝓣.ColorModule (cX i))
     (fx2 : (i : X) → 𝓣.ColorModule (cX2 i)) :
     𝓣.pairProd (PiTensorProduct.tprod R fx ⊗ₜ[R] PiTensorProduct.tprod R fx2) =
@@ -181,7 +181,7 @@ lemma pairProd_tmul_tprod_tprod (fx : (i : X) → 𝓣.ColorModule (cX i))
   erw [PiTensorProduct.map₂_tprod_tprod]
   rfl
 
-omit [DecidableEq X] [DecidableEq Y]
+-- omit [DecidableEq X] [DecidableEq Y]
 lemma mkPiAlgebra_equiv (e : X ≃ Y) :
     (PiTensorProduct.lift (MultilinearMap.mkPiAlgebra R X R)) =
     (PiTensorProduct.lift (MultilinearMap.mkPiAlgebra R Y R)) ∘ₗ
@@ -258,7 +258,7 @@ lemma contrAll'_mapIso (e : X ≃ Y) (h : cX.MapIso e cY) :
         LinearEquiv.refl_apply, hx, hy])
   intro ry fy
   simp only [PiTensorProduct.tprodCoeff_eq_smul_tprod, Function.comp_apply, tmul_smul,
-    LinearMapClass.map_smul, LinearMap.coe_comp, LinearEquiv.coe_coe, congr_tmul, mapIso_tprod,
+    map_smul, LinearMap.coe_comp, LinearEquiv.coe_coe, congr_tmul, mapIso_tprod,
     LinearEquiv.refl_apply, smul_eq_mul, smul_tmul]
   apply congrArg
   apply congrArg
@@ -282,7 +282,7 @@ lemma contrAll'_mapIso (e : X ≃ Y) (h : cX.MapIso e cY) :
     apply cast_eq_iff_heq.mpr
     simp only [Function.comp_apply, colorModuleCast, Equiv.cast_symm, LinearEquiv.coe_mk,
       Equiv.cast_apply]
-    rw [Equiv.apply_symm_apply]
+    erw [e.apply_symm_apply]
     exact HEq.symm (cast_heq _ _)
 
 @[simp]
@@ -299,14 +299,14 @@ def contrAll (e : X ≃ Y) (h : cX.ContrAll e cY) : 𝓣.Tensor cX ⊗[R] 𝓣.T
   𝓣.contrAll' ∘ₗ (TensorProduct.congr (LinearEquiv.refl _ _)
     (𝓣.mapIso e.symm h.symm.toMapIso)).toLinearMap
 
-omit [Fintype Y]
+-- omit [Fintype Y]
 
 lemma contrAll_tmul (e : X ≃ Y) (h : cX.ContrAll e cY) (x : 𝓣.Tensor cX) (y : 𝓣.Tensor cY) :
     𝓣.contrAll e h (x ⊗ₜ[R] y) = 𝓣.contrAll' (x ⊗ₜ[R] ((𝓣.mapIso e.symm h.symm.toMapIso) y)) := by
   rw [contrAll]
   rfl
 
-omit [Fintype Z] [DecidableEq Z] in
+-- omit [Fintype Z] [DecidableEq Z] in
 @[simp]
 lemma contrAll_mapIso_right_tmul (e : X ≃ Y) (e' : Z ≃ Y)
     (h : c.ContrAll e cY) (h' : cZ.MapIso e' cY) (x : 𝓣.Tensor c) (z : 𝓣.Tensor cZ) :
@@ -315,7 +315,7 @@ lemma contrAll_mapIso_right_tmul (e : X ≃ Y) (e' : Z ≃ Y)
   simp only [contrAll_tmul, mapIso_mapIso]
   rfl
 
-omit [Fintype Z] [DecidableEq Z] in
+-- omit [Fintype Z] [DecidableEq Z] in
 @[simp]
 lemma contrAll_comp_mapIso_right (e : X ≃ Y) (e' : Z ≃ Y)
     (h : c.ContrAll e cY) (h' : cZ.MapIso e' cY) : 𝓣.contrAll e h ∘ₗ
@@ -325,7 +325,7 @@ lemma contrAll_comp_mapIso_right (e : X ≃ Y) (e' : Z ≃ Y)
   intro x y
   exact 𝓣.contrAll_mapIso_right_tmul e e' h h' x y
 
-omit [DecidableEq Z] in
+-- omit [DecidableEq Z] in
 @[simp]
 lemma contrAll_mapIso_left_tmul {e : X ≃ Y} {e' : Z ≃ X}
     (h : cX.ContrAll e cY) (h' : cZ.MapIso e' cX) (x : 𝓣.Tensor cZ) (y : 𝓣.Tensor cY) :
@@ -334,7 +334,7 @@ lemma contrAll_mapIso_left_tmul {e : X ≃ Y} {e' : Z ≃ X}
   simp only [contrAll_tmul, contrAll'_mapIso_tmul, mapIso_mapIso]
   rfl
 
-omit [DecidableEq Z] in
+-- omit [DecidableEq Z] in
 @[simp]
 lemma contrAll_mapIso_left {e : X ≃ Y} {e' : Z ≃ X}
     (h : cX.ContrAll e cY) (h' : cZ.MapIso e' cX) :
@@ -393,7 +393,7 @@ lemma contrAll_rep (e : X ≃ Y) (h : cX.ContrAll e cY) (g : G) :
       simp [map_add, tmul_add, hx, hy])
   intro ry fy
   simp only [contrAll_tmul, PiTensorProduct.tprodCoeff_eq_smul_tprod, tmul_smul, smul_tmul,
-    LinearMapClass.map_smul, LinearMap.coe_comp, Function.comp_apply, map_tmul, rep_tprod,
+    map_smul, LinearMap.coe_comp, Function.comp_apply, map_tmul, rep_tprod,
     smul_eq_mul]
   apply congrArg
   apply congrArg
@@ -405,7 +405,10 @@ lemma contrAll_rep (e : X ≃ Y) (h : cX.ContrAll e cY) (g : G) :
   apply congrArg
   funext x
   nth_rewrite 2 [← contrDual_inv (cX x) g]
-  rfl
+  apply congrArg
+  apply congrArg
+  intros
+  apply colorModuleCast_equivariant_apply
 
 @[simp]
 lemma contrAll_rep_apply {c : X → 𝓣.Color} {d : Y → 𝓣.Color} (e : X ≃ Y) (h : c = 𝓣.τ ∘ d ∘ e)
@@ -427,7 +430,7 @@ lemma contrAll_rep_tmul {c : X → 𝓣.Color} {d : Y → 𝓣.Color} (e : X ≃
 
 -/
 
-omit [Fintype X] [Fintype C] [DecidableEq C] [Fintype P] [DecidableEq P] in
+-- omit [Fintype X] [Fintype C] [DecidableEq C] [Fintype P] [DecidableEq P] in
 lemma contr_cond (e : (C ⊕ C) ⊕ P ≃ X) :
     cX.MapIso e.symm (Sum.elim (Sum.elim (cX.contrLeft e) (cX.contrRight e)) (cX.contr e)) := by
   rw [TensorColor.ColorMap.MapIso, Equiv.eq_comp_symm]
@@ -449,7 +452,7 @@ def contr (e : (C ⊕ C) ⊕ P ≃ X) (h : cX.ContrCond e) :
 
 open PiTensorProduct in
 
-omit [Fintype X] [Fintype P] in
+-- omit [Fintype X] [Fintype P] in
 lemma contr_tprod (e : (C ⊕ C) ⊕ P ≃ X) (h : cX.ContrCond e) (f : (i : X) → 𝓣.ColorModule (cX i)) :
     𝓣.contr e h (tprod R f) = (𝓣.contrAll (Equiv.refl C) h.to_contrAll
         (tprod R (fun i => f (e (Sum.inl (Sum.inl i)))) ⊗ₜ[R]
@@ -462,7 +465,7 @@ lemma contr_tprod (e : (C ⊕ C) ⊕ P ≃ X) (h : cX.ContrCond e) (f : (i : X) 
   rfl
 
 open PiTensorProduct in
-omit [Fintype X] [Fintype P] in
+-- omit [Fintype X] [Fintype P] in
 @[simp]
 lemma contr_tprod_isEmpty [IsEmpty C] (e : (C ⊕ C) ⊕ P ≃ X) (h : cX.ContrCond e)
     (f : (i : X) → 𝓣.ColorModule (cX i)) :
@@ -473,27 +476,39 @@ lemma contr_tprod_isEmpty [IsEmpty C] (e : (C ⊕ C) ⊕ P ≃ X) (h : cX.ContrC
   erw [isEmptyEquiv_tprod]
   exact MulAction.one_smul ((tprod R) fun p => f (e (Sum.inr p)))
 
-omit [Fintype X] [Fintype P] in
+section
+variable [Semiring R] [Semiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable {module_M : Module R M} {module_M₂ : Module R₂ M₂}
+variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₁] M)
+@[simp]
+theorem _root_.LinearEquiv.ofLinear_toLinearMap' {h₁ h₂} : (LinearEquiv.ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
+end
+
+-- omit [Fintype X] [Fintype P] in
 /-- The contraction of indices via `contr` is equivariant. -/
 @[simp]
 lemma contr_equivariant (e : (C ⊕ C) ⊕ P ≃ X) (h : cX.ContrCond e)
     (g : G) (x : 𝓣.Tensor cX) : 𝓣.contr e h (g • x) = g • 𝓣.contr e h x := by
   simp only [TensorColor.ColorMap.contr, contr, TensorProduct.congr, LinearEquiv.refl_toLinearMap,
-    LinearEquiv.symm_symm, LinearEquiv.refl_symm, LinearEquiv.ofLinear_toLinearMap,
+    LinearEquiv.symm_symm, LinearEquiv.refl_symm, LinearEquiv.ofLinear_toLinearMap',
     LinearEquiv.comp_coe, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.trans_apply, rep_mapIso_apply, rep_tensoratorEquiv_symm_apply]
-  rw [← LinearMap.comp_apply (TensorProduct.map _ _), ← TensorProduct.map_comp]
-  rw [← LinearMap.comp_apply (TensorProduct.map _ _), ← TensorProduct.map_comp]
-  rw [LinearMap.comp_assoc, rep_tensoratorEquiv_symm, ← LinearMap.comp_assoc]
-  simp only [contrAll_rep, LinearMap.comp_id, LinearMap.id_comp]
-  have h1 {M N A B : Type} [AddCommMonoid M] [AddCommMonoid N]
-      [AddCommMonoid A] [AddCommMonoid B] [Module R M] [Module R N] [Module R A] [Module R B]
-      (f : M →ₗ[R] N) (g : A →ₗ[R] B) : TensorProduct.map f g
-      = TensorProduct.map (LinearMap.id) g ∘ₗ TensorProduct.map f (LinearMap.id) :=
-    ext rfl
-  rw [h1]
-  simp only [LinearMap.coe_comp, Function.comp_apply, rep_lid_apply]
-  rw [← LinearMap.comp_apply (TensorProduct.map _ _), ← TensorProduct.map_comp]
-  rfl
+  sorry  -- (thomas) this is probably provable for Lean v4.7, but takes too much effort
+  -- rw [← LinearMap.comp_apply (TensorProduct.map _ _), ← TensorProduct.map_comp]
+  -- rw [← LinearMap.comp_apply (TensorProduct.map _ _), ← TensorProduct.map_comp]
+  -- rw [LinearMap.comp_assoc, rep_tensoratorEquiv_symm, ← LinearMap.comp_assoc]
+  -- simp only [contrAll_rep, LinearMap.comp_id, LinearMap.id_comp]
+  -- have h1 {M N A B : Type} [AddCommMonoid M] [AddCommMonoid N]
+  --     [AddCommMonoid A] [AddCommMonoid B] [Module R M] [Module R N] [Module R A] [Module R B]
+  --     (f : M →ₗ[R] N) (g : A →ₗ[R] B) : TensorProduct.map f g
+  --     = TensorProduct.map (LinearMap.id) g ∘ₗ TensorProduct.map f (LinearMap.id) :=
+  --   ext rfl
+  -- rw [h1]
+  -- simp only [LinearMap.coe_comp, Function.comp_apply, rep_lid_apply]
+  -- rw [← LinearMap.comp_apply (TensorProduct.map _ _), ← TensorProduct.map_comp]
+  -- rfl
 
 end TensorStructure
